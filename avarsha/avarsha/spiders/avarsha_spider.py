@@ -22,7 +22,9 @@ class AvarshaSpider(scrapy.Spider):
         self.start_urls = []
         self.feeder = Feeds()
         self.url_collections = {}  # list_url:collections
-
+        
+        feed_type = 'PRODUCT' #ADDED BY DONGLONGTU
+        
         if feed_type == 'PRODUCT':
             self.feed_type = feed_type
         else:
@@ -150,7 +152,8 @@ class AvarshaSpider(scrapy.Spider):
         return m.hexdigest()[:16]
 
     def _save_product_id(self, sel, item):
-        item['product_id'] = self._generate_product_id(item)
+        pass
+        #item['product_id'] = self._generate_product_id(item)
 
     def _record_crawl_datetime(self, item):
         now = int(time.time())

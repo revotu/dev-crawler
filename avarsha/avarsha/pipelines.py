@@ -159,24 +159,13 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = ['http://www.promsbelle.com/prom-dresses.html','http://www.promsbelle.com/evening-dresses.html',
-                          'http://www.promsbelle.com/bridesmaid-dresses.html','http://www.promsbelle.com/formal-dresses.html',
-                          'http://www.promsbelle.com/graduation-dresses.html','http://www.promsbelle.com/party-dresses.html',
-                          'http://www.promsbelle.com/cocktail-dresses.html','http://www.promsbelle.com/wedding-dresses.html',
-                          'http://www.promsbelle.com/flower-girl-dresses.html','http://www.promsbelle.com/long-evening-dresses.html',
-                          'http://www.promsbelle.com/sexy-evening-dresses.html','http://www.promsbelle.com/homecoming-dresses.html',
-                          'http://www.promsbelle.com/ball-gowns-for-prom.html','http://www.promsbelle.com/mother-of-the-bride-dresses.html',
-                          'http://www.promsbelle.com/plus-size-wedding-dresses.html','http://www.promsbelle.com/formal-evening-dresses.html',
-                          'http://www.promsbelle.com/short-evening-dresses.html','http://www.promsbelle.com/beach-wedding-dresses.html',
-                          'http://www.promsbelle.com/luxury-wedding-dresses.html','http://www.promsbelle.com/quinceanera-dresses.html',
-                          'http://www.promsbelle.com/new-arrival-prom-dresses.html','http://www.promsbelle.com/long-prom-dresses.html',
-                          'http://www.promsbelle.com/short-prom-dresses.html','http://www.promsbelle.com/high-low-prom-dresses.html',
-                          'http://www.promsbelle.com/plus-size-prom-dresses.html','http://www.promsbelle.com/two-piece-prom-dresses.html',
-                          'http://www.promsbelle.com/semi-formal-dresses.html','http://www.promsbelle.com/plus-size-formal-dresses.html',
-                          'http://www.promsbelle.com/long-formal-dresses.html','http://www.promsbelle.com/short-formal-dresses.html',
-                          'http://www.promsbelle.com/new-arrival-formal-dresses.html','http://www.promsbelle.com/new-arrival-homecoming-dresses.html',
-                          'http://www.promsbelle.com/plus-size-homecoming-dresses.html','http://www.promsbelle.com/tight-homecoming-dresses.html',
-                          'http://www.promsbelle.com/mermaid-prom-dresses.html']
+            wb = load_workbook('D:/www/dev-web-crawler/urls.xlsx')
+            ws = wb.active
+            start_urls = []
+            for i in range(1,5565):
+                start_urls.append(ws.cell(row = i, column = 1).value)
+            wb.save('D:/www/dev-web-crawler/urls.xlsx')
+            
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -206,21 +195,62 @@ class AvarshaPipeline(object):
             raise DropItem("Download images error.")
     
     def store_to_excel(self , item):
-        wb = load_workbook('D:/eclipse/workspace/avarsha-crawler-dev/avarsha/avarsha/terms-products.xlsx')
+        wb = load_workbook('D:/www/dev-web-crawler/products.xlsx')
         ws = wb.active
         data = []
-#         data.append(item['url'])
-#         data.append(item['title'])
-#         data.append(item['sku'])
-#         data.append(item['features'])
-#         data.append(item['list_price'])
-#         data.append(item['price'])
-        data.append(item['terms'])
-        data.append(item['url'])
         data.append(item['sku'])
+        data.append(item['product_id'])
+        data.append('dress')
+        data.append(item['title'])
+        data.append('')
+        data.append(item['price'][len('USD '):])
+        data.append(item['list_price'][len('USD '):])
+        data.append('1.5')
+        data.append('2')
+        data.append('Blushing Pink%%Champagne%%Iovry%%White')
+        data.append('')
+        data.append('')
+        data.append('2%%4%%6%%8%%10%%12%%14%%16%%16W%%18W%%20W%%22W%%24W%%26W')
+        
+        data.append(item['features']['Silhouette'].replace(', ','%%') if 'Silhouette' in item['features'] else '')
+        data.append(item['features']['Hemline/Train'].replace(', ','%%') if 'Hemline/Train' in item['features'] else '')
+        data.append(item['features']['Neckline'].replace(', ','%%') if 'Neckline' in item['features'] else '')
+        data.append('')
+        data.append(item['features']['Waist'].replace(', ','%%') if 'Waist' in item['features'] else '')
+        data.append(item['features']['Sleeve'].replace(', ','%%') if 'Sleeve' in item['features'] else '')
+        data.append(item['features']['Fabric'].replace(', ','%%') if 'Fabric' in item['features'] else '')
+        data.append(item['features']['Embellishment'].replace(', ','%%') if 'Embellishment' in item['features'] else '')
+        data.append('Yes')
+        data.append('Yes')
+        data.append(item['features']['Boning'].replace(', ','%%') if 'Boning' in item['features'] else '')
+        data.append('')
+        data.append(item['features']['Body Shape'].replace(', ','%%') if 'Body Shape' in item['features'] else '')
+        data.append(item['features']['Belt Fabric'].replace(', ','%%') if 'Belt Fabric' in item['features'] else '')
+        data.append(item['features']['Back Style'].replace(', ','%%') if 'Back Style' in item['features'] else '')
+        data.append('')
+        data.append(item['features']['Trend'].replace(', ','%%') if 'Trend' in item['features'] else '')
+        data.append(item['features']['Style'].replace(', ','%%')  if 'Style' in item['features'] else '')
+        data.append(item['features']['Occasion'].replace(', ','%%') if 'Occasion' in item['features'] else '')
+        data.append(item['features']['Season'].replace(', ','%%') if 'Season' in item['features'] else '')
+        data.append(item['features']['Wedding Venues'].replace(', ','%%') if 'Wedding Venues' in item['features'] else '')
+        data.append('5')
+        data.append('789')
         
         ws.append(data)
-        wb.save('D:/eclipse/workspace/avarsha-crawler-dev/avarsha/avarsha/terms-products.xlsx')
+        wb.save('D:/www/dev-web-crawler/products.xlsx')
+        
+        if len(item['review_list']) != 0:
+            wb = load_workbook('D:/www/dev-web-crawler/reviews.xlsx')
+            ws = wb.active
+            for rev in item['review_list']:
+                reviews = []
+                reviews.append(item['sku'])
+                reviews.append(rev['name'])
+                reviews.append(rev['title'])
+                reviews.append(rev['content'])
+                
+                ws.append(reviews)
+                wb.save('D:/www/dev-web-crawler/reviews.xlsx')
 
 
 class AvarshaS3FilesStore(S3FilesStore):

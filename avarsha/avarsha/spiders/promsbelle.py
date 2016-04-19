@@ -14,6 +14,10 @@ _spider_name = 'promsbelle'
 class PromsbelleSpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["promsbelle.com"]
+    
+    wedding_sku = 708669
+    flower_sku = 400896
+    dress_sku = 313705
 
     def __init__(self, *args, **kwargs):
         super(PromsbelleSpider, self).__init__(*args, **kwargs)
@@ -48,8 +52,6 @@ class PromsbelleSpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        pass
-        return
         title_xpath = '//div[@class="product-name"]/h1/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
@@ -57,22 +59,25 @@ class PromsbelleSpider(AvarshaSpider):
 
     def _extract_store_name(self, sel, item):
         pass
-        return
-        item['store_name'] = 'Promsbelle'
 
     def _extract_brand_name(self, sel, item):
-        start_url = sel.response.request.headers['Referer']
-        item['terms'] = start_url[:start_url.find('?')]
+        if sel.response.url.find('wedding') != -1:
+            item['sku'] = str(self.wedding_sku)
+            self.wedding_sku += 1
+        elif sel.response.url.find('flower') != -1:
+            item['sku'] = str(self.flower_sku)
+            self.flower_sku += 1
+        else:
+            item['sku'] = str(self.dress_sku)
+            self.dress_sku += 1
 
     def _extract_sku(self, sel, item):
         sku_xpath = '//p[@class="product-sku"]/text()'
         data = sel.xpath(sku_xpath).extract()
         if len(data) != 0:
-            item['sku'] = data[0][len('Item Code: '):]
+            item['product_id'] = data[0][len('Item Code: '):]
 
     def _extract_features(self, sel, item):
-        pass
-        return
         th_xpath = '//table[@id="product-attribute-specs-table"]//tbody/tr/th/text()'
         th = sel.xpath(th_xpath).extract()
         td_xpath = '//table[@id="product-attribute-specs-table"]//tbody/tr/td/text()'
@@ -90,12 +95,13 @@ class PromsbelleSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        pass
-        return
         img_xpath = '//a[@class="cloud-zoom-gallery"]/@href'
         data = sel.xpath(img_xpath).extract()
+        images = []
         if len(data) != 0:
-            item['image_urls'] = data
+            for img in data:
+                images.append(img + '?sku=' + str(item['sku']))
+        item['image_urls'] = images
 
     def _extract_colors(self, sel, item):
         pass
@@ -107,16 +113,12 @@ class PromsbelleSpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
-        pass
-        return
         price_xpath = '//div[@class="product-shop"]/div[@class="price-box"]/p[@class="special-price"]/span[@class="price"]/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
             item['price'] = self._format_price('USD', data[0].replace('$', ''))
 
     def _extract_list_price(self, sel, item):
-        pass
-        return
         price_xpath = '//div[@class="product-shop"]/div[@class="price-box"]/p[@class="old-price"]/span[@class="price"]/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
@@ -141,7 +143,20 @@ class PromsbelleSpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        pass
+        sel = Selector(sel.response)
+        review_list = []
+        nickname_xpath = '//div[@class="review-dt"]/span[@class="nickname"]/text()'
+        nickname = sel.xpath(nickname_xpath).extract()
+        if len(nickname) != 0:
+            title_xpath = '//div[@class="review-dd"]/div[@class="title"]/text()'
+            title = sel.xpath(title_xpath).extract()
+            content_xpath = '//div[@class="review-dd"]//div[@class="value-review-attr"]/text()'
+            content = sel.xpath(content_xpath).extract()
+            
+            for i in range(len(nickname)):
+                review_list.append({'name':nickname[i],'title':title[i],'content':content[i]})
+                
+        item['review_list'] = review_list
 
 def main():
     scrapy.cmdline.execute(argv=['scrapy', 'crawl', _spider_name])
