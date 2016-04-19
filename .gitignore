@@ -221,3 +221,10 @@ pip-log.txt
 *.project
 *.pydevproject
 *.jpg
+
+################
+## custom file
+################
+
+*.xlsx
+*.xls
