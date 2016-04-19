@@ -99,8 +99,8 @@ class PromsbelleSpider(AvarshaSpider):
         data = sel.xpath(img_xpath).extract()
         images = []
         if len(data) != 0:
-            for img in data:
-                images.append(img + '?sku=' + str(item['sku']))
+            for index,img in enumerate(data):
+                images.append(img + '?index=' + str(index + 1) + '&sku=' + str(item['sku']))
         item['image_urls'] = images
 
     def _extract_colors(self, sel, item):
