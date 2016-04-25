@@ -60,6 +60,7 @@ class ProductItem(Item):
     collections = Field()
     
     terms = Field()
+    referer = Field()
 
     def normalize_attributes(self):
         normalized_status = True
@@ -101,7 +102,8 @@ class ProductItem(Item):
                            'review_rating':float,
                            'max_review_rating':int,
                            'review_list':list,
-                           'terms':basestring,}
+                           'terms':basestring,
+                           'referer':basestring,}
 
         assert_return = True
 
