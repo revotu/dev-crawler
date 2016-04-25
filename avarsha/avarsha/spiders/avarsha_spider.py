@@ -23,7 +23,7 @@ class AvarshaSpider(scrapy.Spider):
         self.feeder = Feeds()
         self.url_collections = {}  # list_url:collections
         
-        #feed_type = 'PRODUCT' #ADDED BY DONGLONGTU
+        feed_type = 'PRODUCT' #ADDED BY DONGLONGTU
         
         if feed_type == 'PRODUCT':
             self.feed_type = feed_type

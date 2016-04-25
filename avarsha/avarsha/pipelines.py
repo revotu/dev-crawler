@@ -96,8 +96,8 @@ class AvarshaPipeline(object):
 #         if spider.settings['VERSION'] == 'DEV':
 #             return item
         if spider.settings['VERSION'] == 'DEV':
-            #self.store_to_excel(item)
-            self.init_to_excel(item)
+            self.store_to_excel(item)
+            #self.init_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -184,18 +184,12 @@ class AvarshaPipeline(object):
 #                           'http://www.sophiaprom.com/flower-girl-dresses-catid673000137',
 #                           'http://www.sophiaprom.com/mother-of-the-bride-dresses-catid673000140',
 #                           'http://www.sophiaprom.com/prom-dresses-2016-catid673004421',]
-            start_urls = ['http://www.27dress.com/c/wedding-dresses.html','http://www.27dress.com/c/latest-wedding-dresses.html',
-                          'http://www.27dress.com/c/a-line-wedding-dresses.html','http://www.27dress.com/c/ball-gown-wedding-dresses.html',
-                          'http://www.27dress.com/c/princess-wedding-dresses.html','http://www.27dress.com/c/sheath-wedding-dresses.html',
-                          'http://www.27dress.com/c/mermaid-wedding-dresses.html','http://www.27dress.com/c/wedding-party-dresses.html',
-                          'http://www.27dress.com/c/bridesmaid-dresses.html','http://www.27dress.com/c/latest-bridesmaid-dresses.html',
-                          'http://www.27dress.com/c/mother-of-the-bride-dresses.html','http://www.27dress.com/c/latest-mother-of-the-bride-dresses.html',
-                          'http://www.27dress.com/c/flower-girl-dresses.html','http://www.27dress.com/c/latest-girls-pageant-dresses.html',
-                          'http://www.27dress.com/c/special-occasion-dresses.html','http://www.27dress.com/c/homecoming-dresses.html',
-                          'http://www.27dress.com/c/evening-dresses.html','http://www.27dress.com/c/latest-evening-dresses.html',
-                          'http://www.27dress.com/c/prom-dresses.html','http://www.27dress.com/c/latest-prom-dresses.html',
-                          'http://www.27dress.com/c/cocktail-dresses.html','http://www.27dress.com/c/latest-cocktail-dresses.html',
-                          'http://www.27dress.com/c/quinceanera-dresses.html','http://www.27dress.com/c/women-s-dresses.html']
+            start_urls = []
+            wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
+            ws = wb.active
+            for i in range(1,10068):
+                start_urls.append(ws.cell(row = i, column = 2).value)
+            wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -253,27 +247,27 @@ class AvarshaPipeline(object):
         data.append('')
         data.append('2%%4%%6%%8%%10%%12%%14%%16%%16W%%18W%%20W%%22W%%24W%%26W')
         
-        data.append(item['features']['Silhouette'].replace(', ','%%') if 'Silhouette' in item['features'] else '')
-        data.append(item['features']['Hemline/Train'].replace(', ','%%') if 'Hemline/Train' in item['features'] else '')
-        data.append(item['features']['Neckline'].replace(', ','%%') if 'Neckline' in item['features'] else '')
-        data.append('')
-        data.append(item['features']['Waist'].replace(', ','%%') if 'Waist' in item['features'] else '')
-        data.append(item['features']['Sleeve'].replace(', ','%%') if 'Sleeve' in item['features'] else '')
-        data.append(item['features']['Fabric'].replace(', ','%%') if 'Fabric' in item['features'] else '')
-        data.append(item['features']['Embellishment'].replace(', ','%%') if 'Embellishment' in item['features'] else '')
+        data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
+        data.append(item['features']['HEMLINE / TRAIN'].replace(', ','%%') if 'HEMLINE / TRAIN' in item['features'] else '')
+        data.append(item['features']['NECKLINE'].replace(', ','%%') if 'NECKLINE' in item['features'] else '')
+        data.append(item['features']['SLEEVE LENGTH'].replace(', ','%%') if 'SLEEVE LENGTH' in item['features'] else '')
+        data.append(item['features']['WAIST'].replace(', ','%%') if 'WAIST' in item['features'] else '')
+        data.append(item['features']['SLEEVE'].replace(', ','%%') if 'Sleeve' in item['features'] else '')
+        data.append(item['features']['FABRIC'].replace(', ','%%') if 'FABRIC' in item['features'] else '')
+        data.append(item['features']['EMBELLISHMENT'].replace(', ','%%') if 'EMBELLISHMENT' in item['features'] else '')
         data.append('Yes')
         data.append('Yes')
-        data.append(item['features']['Boning'].replace(', ','%%') if 'Boning' in item['features'] else '')
+        data.append(item['features']['BONING'].replace(', ','%%') if 'Boning' in item['features'] else '')
         data.append('')
-        data.append(item['features']['Body Shape'].replace(', ','%%') if 'Body Shape' in item['features'] else '')
-        data.append(item['features']['Belt Fabric'].replace(', ','%%') if 'Belt Fabric' in item['features'] else '')
-        data.append(item['features']['Back Style'].replace(', ','%%') if 'Back Style' in item['features'] else '')
+        data.append(item['features']['BODY SHAPE'].replace(', ','%%') if 'BODY SHAPE' in item['features'] else '')
+        data.append(item['features']['BELT FABRIC'].replace(', ','%%') if 'Belt Fabric' in item['features'] else '')
+        data.append(item['features']['BACK STYLE'].replace(', ','%%') if 'Back Style' in item['features'] else '')
         data.append('')
-        data.append(item['features']['Trend'].replace(', ','%%') if 'Trend' in item['features'] else '')
-        data.append(item['features']['Style'].replace(', ','%%')  if 'Style' in item['features'] else '')
-        data.append(item['features']['Occasion'].replace(', ','%%') if 'Occasion' in item['features'] else '')
-        data.append(item['features']['Season'].replace(', ','%%') if 'Season' in item['features'] else '')
-        data.append(item['features']['Wedding Venues'].replace(', ','%%') if 'Wedding Venues' in item['features'] else '')
+        data.append(item['features']['TREND'].replace(', ','%%') if 'Trend' in item['features'] else '')
+        data.append(item['features']['STYLE'].replace(', ','%%')  if 'STYLE' in item['features'] else '')
+        data.append(item['features']['OCCASION'].replace(', ','%%') if 'Occasion' in item['features'] else '')
+        data.append(item['features']['SEASON'].replace(', ','%%') if 'SEASON' in item['features'] else '')
+        data.append(item['features']['WEDDING VENUES'].replace(', ','%%') if 'WEDDING VENUES' in item['features'] else '')
         data.append('5')
         data.append('789')
         
@@ -287,7 +281,6 @@ class AvarshaPipeline(object):
                 reviews = []
                 reviews.append(item['sku'])
                 reviews.append(rev['name'])
-                reviews.append(rev['title'])
                 reviews.append(rev['content'])
                 
                 ws.append(reviews)
