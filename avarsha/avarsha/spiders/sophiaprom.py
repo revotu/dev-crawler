@@ -9,7 +9,7 @@ from scrapy.selector import Selector
 from avarsha_spider import AvarshaSpider
 
 
-_spider_name = 'promsbelle'
+_spider_name = 'sophiaprom'
 
 class SophiapromSpider(AvarshaSpider):
     name = _spider_name
