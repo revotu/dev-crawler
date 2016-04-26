@@ -96,8 +96,8 @@ class AvarshaPipeline(object):
 #         if spider.settings['VERSION'] == 'DEV':
 #             return item
         if spider.settings['VERSION'] == 'DEV':
-            self.store_to_excel(item)
-            #self.init_to_excel(item)
+            #self.store_to_excel(item)
+            self.init_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -160,36 +160,36 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-#             start_urls = ['http://www.sophiaprom.com/special-occasion-dresses-catid673004416',
-#                           'http://www.sophiaprom.com/evening-dresses-catid673004420',
-#                           'http://www.sophiaprom.com/ball-gown-dresses-catid673007988',
-#                           'http://www.sophiaprom.com/cocktail-dresses-catid673004419',
-#                           'http://www.sophiaprom.com/new-arrival-catid673004423',
-#                           'http://www.sophiaprom.com/prom-dresses-2016-catid673004421',
-#                           'http://www.sophiaprom.com/two-piece-prom-dresses-catid786017081',
-#                           'http://www.sophiaprom.com/quinceanera-dresses-catid673004441',
-#                           'http://www.sophiaprom.com/sweet-16-catid673007840',
-#                           'http://www.sophiaprom.com/homecoming-dresses-catid673004436',
-#                           'http://www.sophiaprom.com/formal-dresses-catid673005550',
-#                           'http://www.sophiaprom.com/wedding-dresses-catid673000142',
-#                           'http://www.sophiaprom.com/aline-wedding-dresses-catid673005546',
-#                           'http://www.sophiaprom.com/2016-new-arrival-catid673004349',
-#                           'http://www.sophiaprom.com/beach-wedding-dresses-catid673003635',
-#                           'http://www.sophiaprom.com/casual-wedding-dress-catid673005544',
-#                           'http://www.sophiaprom.com/plus-size-wedding-dresses-catid673003643',
-#                           'http://www.sophiaprom.com/vintage-wedding-dresses-catid673005542',
-#                           'http://www.sophiaprom.com/luxury-wedding-dresses-catid673004364',
-#                           'http://www.sophiaprom.com/wedding-party-dresses-catid673000069',
-#                           'http://www.sophiaprom.com/bridesmaid-dresses-catid673000136',
-#                           'http://www.sophiaprom.com/flower-girl-dresses-catid673000137',
-#                           'http://www.sophiaprom.com/mother-of-the-bride-dresses-catid673000140',
-#                           'http://www.sophiaprom.com/prom-dresses-2016-catid673004421',]
-            start_urls = []
-            wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
-            ws = wb.active
-            for i in range(1,10068):
-                start_urls.append(ws.cell(row = i, column = 2).value)
-            wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
+            start_urls = ['http://www.sophiaprom.com/special-occasion-dresses-catid673004416',
+                          'http://www.sophiaprom.com/evening-dresses-catid673004420',
+                          'http://www.sophiaprom.com/ball-gown-dresses-catid673007988',
+                          'http://www.sophiaprom.com/cocktail-dresses-catid673004419',
+                          'http://www.sophiaprom.com/new-arrival-catid673004423',
+                          'http://www.sophiaprom.com/prom-dresses-2016-catid673004421',
+                          'http://www.sophiaprom.com/two-piece-prom-dresses-catid786017081',
+                          'http://www.sophiaprom.com/quinceanera-dresses-catid673004441',
+                          'http://www.sophiaprom.com/sweet-16-catid673007840',
+                          'http://www.sophiaprom.com/homecoming-dresses-catid673004436',
+                          'http://www.sophiaprom.com/formal-dresses-catid673005550',
+                          'http://www.sophiaprom.com/wedding-dresses-catid673000142',
+                          'http://www.sophiaprom.com/aline-wedding-dresses-catid673005546',
+                          'http://www.sophiaprom.com/2016-new-arrival-catid673004349',
+                          'http://www.sophiaprom.com/beach-wedding-dresses-catid673003635',
+                          'http://www.sophiaprom.com/casual-wedding-dress-catid673005544',
+                          'http://www.sophiaprom.com/plus-size-wedding-dresses-catid673003643',
+                          'http://www.sophiaprom.com/vintage-wedding-dresses-catid673005542',
+                          'http://www.sophiaprom.com/luxury-wedding-dresses-catid673004364',
+                          'http://www.sophiaprom.com/wedding-party-dresses-catid673000069',
+                          'http://www.sophiaprom.com/bridesmaid-dresses-catid673000136',
+                          'http://www.sophiaprom.com/flower-girl-dresses-catid673000137',
+                          'http://www.sophiaprom.com/mother-of-the-bride-dresses-catid673000140',
+                          'http://www.sophiaprom.com/prom-dresses-2016-catid673004421',]
+#             start_urls = []
+#             wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
+#             ws = wb.active
+#             for i in range(1,10068):
+#                 start_urls.append(ws.cell(row = i, column = 2).value)
+#             wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
