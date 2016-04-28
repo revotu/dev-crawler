@@ -9,24 +9,24 @@ from scrapy.selector import Selector
 from avarsha_spider import AvarshaSpider
 
 
-_spider_name = 'sophiaprom'
+_spider_name = 'weddingtonway'
 
-class SophiapromSpider(AvarshaSpider):
+class WeddingtonwaySpider(AvarshaSpider):
     name = _spider_name
-    allowed_domains = ["sophiaprom.com"]
+    allowed_domains = ["weddingtonway.com"]
     
     wedding_sku = 709437
     flower_sku = 401042
     dress_sku = 318355
 
     def __init__(self, *args, **kwargs):
-        super(SophiapromSpider, self).__init__(*args, **kwargs)
+        super(WeddingtonwaySpider, self).__init__(*args, **kwargs)
 
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
 
-        base_url = 'http://www.sophiaprom.com'
-        items_xpath = '//div[@class="proImgBox"]/a/@href'
+        base_url = 'https://www.weddingtonway.com'
+        items_xpath = '//div[@class="search-item-container"]//a[@class="search-item-image-link"]/@href'
 
         # don't need to change this line
         return self._find_items_from_list_page(
@@ -36,7 +36,7 @@ class SophiapromSpider(AvarshaSpider):
         """find next pages in category url"""
 
         base_url = ''
-        nexts_xpath = '//a[@class="page-next"]/@href'
+        nexts_xpath = '//div[@class="products-pagination-bottom"]//a[@class="products-next-prev-link"][last()]/@href'
 
         # don't need to change this line
         return self._find_nexts_from_list_page(
@@ -52,15 +52,17 @@ class SophiapromSpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        title_xpath = '//h1[@itemprop="name"]/text()'
+        return
+        title_xpath = '//div[@class="mi-content fr"]/div[@class="title"]/h1/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
             item['title'] = data[0]
 
     def _extract_store_name(self, sel, item):
-        pass
+        item['referer'] = sel.response.request.headers['Referer']
 
     def _extract_brand_name(self, sel, item):
+        return
         if sel.response.url.find('wedding') != -1:
             item['sku'] = str(self.wedding_sku)
             self.wedding_sku += 1
@@ -72,17 +74,17 @@ class SophiapromSpider(AvarshaSpider):
             self.dress_sku += 1
 
     def _extract_sku(self, sel, item):
-        sku_xpath = '//div[@class="pro_m"]//em/text()'
-        data = sel.xpath(sku_xpath).extract()
-        if len(data) != 0:
-            item['product_id'] = data[0][len('Style:'):]
+        item['product_id'] = sel.response.url[sel.response.url.find('?sku=') + len('?sku='):]
 
     def _extract_features(self, sel, item):
-        key_xpath = '//ul[@class="content"]/li/span/text()'
+        return
+        key_xpath = '//ul[@class="property"]/li/strong/text()'
         key = sel.xpath(key_xpath).extract()
-        val_xpath = '//ul[@class="content"]/li/text()'
+        val_xpath = '//ul[@class="property"]/li/text()'
         val = sel.xpath(val_xpath).extract()
         if len(key) != 0 and len(val) != 0:
+            key = [k.encode('ascii').strip()[:-2] for k in key]
+            val = [v.encode('ascii').strip() for v in val if v.encode('ascii').strip()]
             item['features'] = dict(zip(key,val))
             
     def _extract_description(self, sel, item):
@@ -95,7 +97,8 @@ class SophiapromSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        img_xpath = '//div[@class="n_thumbImg_item"]/ul/li/img/@data-big-img'
+        return
+        img_xpath = '//ul[@class="thumb_list"]/li/a/@rev'
         data = sel.xpath(img_xpath).extract()
         images = []
         if len(data) != 0:
@@ -113,16 +116,18 @@ class SophiapromSpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
-        price_xpath = '//p[@class="curPrice fl"]/span[@id="unit_price"]/text()'
+        return
+        price_xpath = '//dd[@class="price-detail"]//strong[@class="shop_price"]/span/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
-            item['price'] = self._format_price('USD', data[0].replace('$', ''))
+            item['price'] = self._format_price('USD', data[0].replace('US$ ', ''))
 
     def _extract_list_price(self, sel, item):
-        price_xpath = '//span[@class="costPrice"]/span[@id="unit_price"]/text()'
+        return
+        price_xpath = '//dd[@class="price-detail"]/del/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
-            item['list_price'] = self._format_price('USD', data[0].replace('$', ''))
+            item['list_price'] = self._format_price('USD', data[0].replace('US$ ', ''))
 
     def _extract_low_price(self, sel, item):
         pass
@@ -143,16 +148,17 @@ class SophiapromSpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        return
         sel = Selector(sel.response)
         review_list = []
-        nickname_xpath = '//section[@id="review"]//li/p[@class="review_t"]/strong[@class="name"]/text()'
+        nickname_xpath = '//div[@id="ECS_COMMENT"]/div[@class="prdrew_content"]/dt/strong/text()'
         nickname = sel.xpath(nickname_xpath).extract()
         if len(nickname) != 0:
-            content_xpath = '//section[@id="review"]//li/div/text()'
+            content_xpath = '//div[@id="ECS_COMMENT"]/div[@class="prdrew_content"]/dd/text()'
             content = sel.xpath(content_xpath).extract()
-            
+            content = [c.strip() for c in content if c.strip() != 'Hi']
             for i in range(len(nickname)):
-                review_list.append({'name':nickname[i],'content':content[i]})
+                review_list.append({'name':nickname[i].strip()[len('By '):],'content':content[i]})
                 
         item['review_list'] = review_list
 
