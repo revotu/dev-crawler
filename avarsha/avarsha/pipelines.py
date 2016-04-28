@@ -227,7 +227,7 @@ class AvarshaPipeline(object):
         data.append(item['product_id'])
         data.append('dress')
         data.append(item['title'])
-        data.append('')
+        data.append(item['description'])
         data.append(item['price'][len('USD '):])
         data.append(item['list_price'][len('USD '):])
         data.append('1.5')
