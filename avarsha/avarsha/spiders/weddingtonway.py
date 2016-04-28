@@ -15,9 +15,9 @@ class WeddingtonwaySpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["weddingtonway.com"]
     
-    wedding_sku = 709437
-    flower_sku = 401042
-    dress_sku = 318355
+    #wedding_sku = 710933
+    flower_sku = 401591
+    dress_sku = 326653
 
     def __init__(self, *args, **kwargs):
         super(WeddingtonwaySpider, self).__init__(*args, **kwargs)
@@ -52,21 +52,16 @@ class WeddingtonwaySpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        return
-        title_xpath = '//div[@class="mi-content fr"]/div[@class="title"]/h1/text()'
+        title_xpath = '//span[@itemprop="name"]/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
             item['title'] = data[0]
 
     def _extract_store_name(self, sel, item):
-        item['referer'] = sel.response.request.headers['Referer']
+        pass
 
     def _extract_brand_name(self, sel, item):
-        return
-        if sel.response.url.find('wedding') != -1:
-            item['sku'] = str(self.wedding_sku)
-            self.wedding_sku += 1
-        elif sel.response.url.find('flower') != -1:
+        if sel.response.url.find('flower') != -1:
             item['sku'] = str(self.flower_sku)
             self.flower_sku += 1
         else:
@@ -77,18 +72,13 @@ class WeddingtonwaySpider(AvarshaSpider):
         item['product_id'] = sel.response.url[sel.response.url.find('?sku=') + len('?sku='):]
 
     def _extract_features(self, sel, item):
-        return
-        key_xpath = '//ul[@class="property"]/li/strong/text()'
-        key = sel.xpath(key_xpath).extract()
-        val_xpath = '//ul[@class="property"]/li/text()'
-        val = sel.xpath(val_xpath).extract()
-        if len(key) != 0 and len(val) != 0:
-            key = [k.encode('ascii').strip()[:-2] for k in key]
-            val = [v.encode('ascii').strip() for v in val if v.encode('ascii').strip()]
-            item['features'] = dict(zip(key,val))
+        item['features'] = {}
             
     def _extract_description(self, sel, item):
-        pass
+        description_xpath = '//span[@itemprop="description"]/text()'
+        data = sel.xpath(description_xpath).extract()
+        if len(data) != 0:
+            item['description'] = data[0] 
 
     def _extract_size_chart(self, sel, item):
         pass
@@ -97,13 +87,26 @@ class WeddingtonwaySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        return
-        img_xpath = '//ul[@class="thumb_list"]/li/a/@rev'
+        img_xpath = '//img[@class="thumb-image"]/@data-original-image-src'
         data = sel.xpath(img_xpath).extract()
         images = []
         if len(data) != 0:
             for index,img in enumerate(data):
-                images.append(img + '?index=' + str(index + 1) + '&sku=' + str(item['sku']))
+                images.append(img + '?index=' + str(index + 1) + '&sku=' + str(item['sku']) +'&dir=weddingtonway')
+                
+        custom_img_xpath = '//div[@class="product-real-women-photos-container ctrRealWomenPhotos"]/a/@data-modal-dialog-url'  
+        data = sel.xpath(custom_img_xpath).extract()
+        if(len(data)) != 0:
+            for cus_url in data:
+                content = urllib2.urlopen('https://www.weddingtonway.com' + cus_url).read()
+                content = self.__remove_escape(content)
+                sel = Selector(text=content)
+                cus_img_xpath = '//img[@class="real-women-modal-image"]/@src'
+                cus_img_list = sel.xpath(cus_img_xpath).extract()
+                if len(cus_img_list) != 0:
+                    index += 1
+                    images.append(cus_img_list[0] + '?index=' + str(index + 1) + '&sku=' + str(item['sku']) +'&dir=customimgs')
+        
         item['image_urls'] = images
 
     def _extract_colors(self, sel, item):
@@ -116,18 +119,16 @@ class WeddingtonwaySpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
-        return
-        price_xpath = '//dd[@class="price-detail"]//strong[@class="shop_price"]/span/text()'
+        price_xpath = '//span[@class="price-label"]/span[@class="price"]/text() | //div[@class="price"]/span[@itemprop="price"]/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
-            item['price'] = self._format_price('USD', data[0].replace('US$ ', ''))
+            item['price'] = self._format_price('USD', data[0].replace('$', ''))
 
     def _extract_list_price(self, sel, item):
-        return
-        price_xpath = '//dd[@class="price-detail"]/del/text()'
+        price_xpath = '//div[@class="price"]/span[@itemprop="price"]/text() | //div[@class="price-tag"]/div/span[@class="original-price"]/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
-            item['list_price'] = self._format_price('USD', data[0].replace('US$ ', ''))
+            item['list_price'] = self._format_price('USD', data[0].replace('$', ''))
 
     def _extract_low_price(self, sel, item):
         pass
@@ -148,17 +149,15 @@ class WeddingtonwaySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        return
         sel = Selector(sel.response)
         review_list = []
-        nickname_xpath = '//div[@id="ECS_COMMENT"]/div[@class="prdrew_content"]/dt/strong/text()'
+        nickname_xpath = '//ul[@id="reviews"]/div[@class="review"]/div[@class="review-details"]/div[@class="name"]/text()'
         nickname = sel.xpath(nickname_xpath).extract()
         if len(nickname) != 0:
-            content_xpath = '//div[@id="ECS_COMMENT"]/div[@class="prdrew_content"]/dd/text()'
+            content_xpath = '//ul[@id="reviews"]/div[@class="review"]/div[@class="review-text-container"]/div[@class="review-text"]/text()'
             content = sel.xpath(content_xpath).extract()
-            content = [c.strip() for c in content if c.strip() != 'Hi']
             for i in range(len(nickname)):
-                review_list.append({'name':nickname[i].strip()[len('By '):],'content':content[i]})
+                review_list.append({'name':nickname[i].strip(),'content':content[i].strip()})
                 
         item['review_list'] = review_list
 
