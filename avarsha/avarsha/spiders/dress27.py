@@ -52,6 +52,7 @@ class Dress27Spider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
+        return
         title_xpath = '//div[@class="mi-content fr"]/div[@class="title"]/h1/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
@@ -61,23 +62,17 @@ class Dress27Spider(AvarshaSpider):
         pass
 
     def _extract_brand_name(self, sel, item):
-        if sel.response.url.find('wedding') != -1:
-            item['sku'] = str(self.wedding_sku)
-            self.wedding_sku += 1
-        elif sel.response.url.find('flower') != -1:
-            item['sku'] = str(self.flower_sku)
-            self.flower_sku += 1
-        else:
-            item['sku'] = str(self.dress_sku)
-            self.dress_sku += 1
+        item['sku'] = sel.response.url[sel.response.url.find('?sku=') + len('?sku='):]
 
     def _extract_sku(self, sel, item):
+        return
         sku_xpath = '//div[@class="mi-content fr"]/div/h1/span/text()'
         data = sel.xpath(sku_xpath).extract()
         if len(data) != 0:
             item['product_id'] = data[0][len('Item Code: '):]
 
     def _extract_features(self, sel, item):
+        return
         key_xpath = '//ul[@class="property"]/li/strong/text()'
         key = sel.xpath(key_xpath).extract()
         val_xpath = '//ul[@class="property"]/li/text()'
@@ -97,7 +92,7 @@ class Dress27Spider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        img_xpath = '//ul[@class="thumb_list"]/li/a/@rev'
+        img_xpath = '//ul[@class="thumb_list"]/li/a/@rev | //img[@class="goods_pic"]/@src'
         data = sel.xpath(img_xpath).extract()
         images = []
         if len(data) != 0:
@@ -115,12 +110,14 @@ class Dress27Spider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
+        return
         price_xpath = '//dd[@class="price-detail"]//strong[@class="shop_price"]/span/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
             item['price'] = self._format_price('USD', data[0].replace('US$ ', ''))
 
     def _extract_list_price(self, sel, item):
+        return
         price_xpath = '//dd[@class="price-detail"]/del/text()'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
@@ -145,6 +142,7 @@ class Dress27Spider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        return
         sel = Selector(sel.response)
         review_list = []
         nickname_xpath = '//div[@id="ECS_COMMENT"]/div[@class="prdrew_content"]/dt/strong/text()'

@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         if spider.settings['VERSION'] == 'DEV':
 #             return item
         if spider.settings['VERSION'] == 'DEV':
-            self.store_to_excel(item)
+            #self.store_to_excel(item)
             #self.init_to_excel(item)
             return item
 
@@ -160,25 +160,11 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-#             start_urls = ['https://www.weddingtonway.com/all/bridesmaid-dresses',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/exclusive-collection',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/with/price/0,150',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/maternity-bridesmaid-dresses',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/sale',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/junior-bridesmaid-dresses',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/quick-delivery-styles',
-#                           'https://www.weddingtonway.com/all/wedding-dresses',
-#                           'https://www.weddingtonway.com/all/little-white-dresses',
-#                           'https://www.weddingtonway.com/all/bridesmaid-dresses/colors/black/with/length/cocktail',
-#                           'https://www.weddingtonway.com/all/special-occasion-dresses',
-#                           'https://www.weddingtonway.com/all/flower-girl-dresses',
-#                           'https://www.weddingtonway.com/all/special-occasion-dresses',
-#                           'https://www.weddingtonway.com/all/intimates-and-shapewear',]
             start_urls = []
             wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
             ws = wb.active
-            for i in range(1,2160):
-                start_urls.append(ws.cell(row = i, column = 2).value)
+            for i in range(1,7180):
+                start_urls.append(ws.cell(row = i, column = 1).value)
             wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
             feeder.init_test_feeds(start_urls)
         else:
