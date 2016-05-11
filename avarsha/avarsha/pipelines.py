@@ -98,6 +98,8 @@ class AvarshaPipeline(object):
         if spider.settings['VERSION'] == 'DEV':
             #self.store_to_excel(item)
             #self.init_to_excel(item)
+            spider.email_list = spider.email_list + list(set(item['email']) - set(spider.email_list))
+            print spider.email_list
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -160,13 +162,9 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = []
-            wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
-            ws = wb.active
-            for i in range(1,7180):
-                start_urls.append(ws.cell(row = i, column = 1).value)
-            wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
+            start_urls = ['http://jinzabridal.com']
             feeder.init_test_feeds(start_urls)
+            spider.allowed_domains.append(start_urls[0][len("http://"):])
         else:
             feeder.init_feeds(spider_name=spider.name,
                 feed_type=spider.feed_type)
@@ -261,7 +259,6 @@ class AvarshaPipeline(object):
                 
                 ws.append(reviews)
                 wb.save('D:/www/dev-web-crawler/reviews.xlsx')
-
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):

@@ -18,12 +18,13 @@ from avarsha.items import ProductItem
 class AvarshaSpider(scrapy.Spider):
     def __init__(self, feed_type=None, *args, **kwargs):
         super(AvarshaSpider, self).__init__(*args, **kwargs)
-
-        self.start_urls = []
+        self.start_urls = [kwargs.get('start_url')]
+        #self.start_urls = ["http://" + str(kwargs.get('start_url'))]
+        #self.start_urls = []
         self.feeder = Feeds()
         self.url_collections = {}  # list_url:collections
         
-        feed_type = 'PRODUCT' #ADDED BY DONGLONGTU
+        #feed_type = 'PRODUCT' #ADDED BY DONGLONGTU
         
         if feed_type == 'PRODUCT':
             self.feed_type = feed_type
@@ -43,20 +44,22 @@ class AvarshaSpider(scrapy.Spider):
         # preprocess json response, or xpath does not work
         response = response.replace(body=self._remove_escape(response.body))
 
-        if self.feed_type == 'PRODUCT':
-            yield self.parse_item(response)
-            return
+        yield self.parse_item(response)
+
+#         if self.feed_type == 'PRODUCT':
+#             yield self.parse_item(response)
+#             return
 
         self.log('Parse category link: %s' % response.url, log.DEBUG)
 
         sel = Selector(response)
 
         item_urls = []
-        try:
-            for request in self.find_items_from_list_page(sel, item_urls):
-                yield request
-        except:
-            self.log('Exception in find_items_from_list_page', log.ERROR)
+#         try:
+#             for request in self.find_items_from_list_page(sel, item_urls):
+#                 yield request
+#         except:
+#             self.log('Exception in find_items_from_list_page', log.ERROR)
 
         list_urls = []
         try:
@@ -95,6 +98,7 @@ class AvarshaSpider(scrapy.Spider):
         self._extract_prices(sel, item)
         self._extract_is_free_shipping(sel, item)
         self._extract_reviews(sel, item)
+        self._extract_email_list(sel, item)
 
         # auto filled methods, don't need to override them
         # must include the following methods if you override parse_item
@@ -122,7 +126,8 @@ class AvarshaSpider(scrapy.Spider):
         requests = []
         for path in nexts:
             list_url = path
-            if path.find(base_url) == -1:
+            #if path.find(base_url) == -1:
+            if path.find("http") == -1:
                 list_url = base_url + path
             list_urls.append(list_url)
             request = scrapy.Request(list_url, callback=self.parse)
@@ -264,4 +269,7 @@ class AvarshaSpider(scrapy.Spider):
         pass
 
     def _extract_review_list(self, sel, item):
+        pass
+
+    def _extract_email_list(self, sel, item):
         pass
