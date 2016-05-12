@@ -55,11 +55,11 @@ class AvarshaSpider(scrapy.Spider):
         sel = Selector(response)
 
         item_urls = []
-#         try:
-#             for request in self.find_items_from_list_page(sel, item_urls):
-#                 yield request
-#         except:
-#             self.log('Exception in find_items_from_list_page', log.ERROR)
+        try:
+            for request in self.find_items_from_list_page(sel, item_urls):
+                yield request
+        except:
+            self.log('Exception in find_items_from_list_page', log.ERROR)
 
         list_urls = []
         try:
@@ -130,7 +130,7 @@ class AvarshaSpider(scrapy.Spider):
             if path.find("http") == -1:
                 list_url = base_url + path
             list_urls.append(list_url)
-            request = scrapy.Request(list_url, callback=self.parse)
+            request = scrapy.Request(list_url, callback=self.parse_item)
             requests.append(request)
         return requests
 

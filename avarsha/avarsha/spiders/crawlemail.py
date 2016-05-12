@@ -17,15 +17,15 @@ class EmailSpider(AvarshaSpider):
     def __init__(self, *args, **kwargs):
         super(EmailSpider, self).__init__(*args, **kwargs)
 
-    def find_nexts_from_list_page(self, sel, list_urls):
-        """find next pages in category url"""
+    def find_items_from_list_page(self, sel, item_urls):
+        """parse items in category page"""
 
-        base_url = self.start_urls[0]
-        nexts_xpath = '//a[not(starts-with(@href,"mail")) and not(contains(@href,".jpg")) and not(contains(@href,".jpeg")) and not(contains(@href,".png")) and not(contains(@href,".gif"))]/@href'
+        base_url = sel.response.url
+        items_xpath = '//a[not(starts-with(@href,"mail")) and not(contains(@href,".jpg")) and not(contains(@href,".jpeg")) and not(contains(@href,".png")) and not(contains(@href,".gif"))]/@href'
 
         # don't need to change this line
-        return self._find_nexts_from_list_page(
-            sel, base_url, nexts_xpath, list_urls)
+        return self._find_items_from_list_page(
+            sel, base_url, items_xpath, item_urls)
 
     def _extract_url(self, sel, item):
         item['url'] = sel.response.url
