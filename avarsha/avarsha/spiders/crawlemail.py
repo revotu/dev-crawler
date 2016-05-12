@@ -31,7 +31,12 @@ class EmailSpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_email_list(self, sel, item):
-        item['email'] = list(set(re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", sel.response.body, re.I)))
+        email_list = []
+        email = list(set(re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", sel.response.body, re.I)))
+        for v in email:
+            if v.find('.jpg') == -1 and v.find('.jpeg') == -1 and v.find('.png') == -1 and v.find('.gif') == -1:
+                email_list.append(v)
+        item['email'] = email_list
 
 def main():
     scrapy.cmdline.execute(argv = ['scrapy', 'crawl', _spider_name])
