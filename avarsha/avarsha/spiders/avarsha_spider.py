@@ -18,9 +18,9 @@ from avarsha.items import ProductItem
 class AvarshaSpider(scrapy.Spider):
     def __init__(self, feed_type=None, *args, **kwargs):
         super(AvarshaSpider, self).__init__(*args, **kwargs)
-        self.start_urls = [kwargs.get('start_url')]
+        #self.start_urls = [kwargs.get('start_url')]
         #self.start_urls = ["http://" + str(kwargs.get('start_url'))]
-        #self.start_urls = []
+        self.start_urls = []
         self.feeder = Feeds()
         self.url_collections = {}  # list_url:collections
         

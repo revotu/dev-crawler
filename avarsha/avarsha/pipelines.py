@@ -96,9 +96,11 @@ class AvarshaPipeline(object):
 #         if spider.settings['VERSION'] == 'DEV':
 #             return item
         if spider.settings['VERSION'] == 'DEV':
-            #self.store_to_excel(item)
-            #self.init_to_excel(item)
-            spider.email_list = spider.email_list + list(set(item['email']) - set(spider.email_list))
+            index = item['url'].find('//') + len('//')
+            key = item['url'][index:].replace('www.','')
+            if key.find('/') != -1:
+                key = key[:key.find('/')]
+            spider.email_list[key] = spider.email_list.setdefault(key,[]) + list(set(item['email']) - set(spider.email_list.setdefault(key,[])))
             print spider.email_list
             return item
 
@@ -162,8 +164,13 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = spider.start_urls
-            spider.allowed_domains.append(start_urls[0][len("http://"):])
+            start_urls = []
+            wb = load_workbook('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
+            ws = wb.active
+            for i in range(1,326):
+                start_urls.append(ws.cell(row = i,column = 1).value)
+                spider.allowed_domains.append(ws.cell(row = i,column = 1).value[len("http://"):])
+            wb.save('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,

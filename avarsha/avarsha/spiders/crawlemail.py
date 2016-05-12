@@ -12,7 +12,7 @@ _spider_name = 'email'
 class EmailSpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = []
-    email_list = []
+    email_list = {}
 
     def __init__(self, *args, **kwargs):
         super(EmailSpider, self).__init__(*args, **kwargs)
