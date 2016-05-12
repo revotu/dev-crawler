@@ -21,7 +21,7 @@ class EmailSpider(AvarshaSpider):
         """find next pages in category url"""
 
         base_url = self.start_urls[0]
-        nexts_xpath = '//a[not(starts-with(@href,"mail"))]/@href'
+        nexts_xpath = '//a[not(starts-with(@href,"mail")) and not(contains(@href,".jpg")) and not(contains(@href,".jpeg")) and not(contains(@href,".png")) and not(contains(@href,".gif"))]/@href'
 
         # don't need to change this line
         return self._find_nexts_from_list_page(

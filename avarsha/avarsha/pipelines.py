@@ -102,7 +102,8 @@ class AvarshaPipeline(object):
                 key = key[:key.find('/')]
             spider.email_list[key] = spider.email_list.setdefault(key,[]) + list(set(item['email']) - set(spider.email_list.setdefault(key,[])))
             print spider.email_list
-            return item
+            return
+            #return item
 
         if spider.settings['CHROME_ENABLED'] is True:
             try:
