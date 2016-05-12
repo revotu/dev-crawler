@@ -27,6 +27,7 @@ USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; Ac
 #DOWNLOAD_DELAY = 1
 DOWNLOAD_DELAY = 0
 COOKIES_ENABLED = False
+DEPTH_LIMIT = 3
 
 CHROME_ENABLED = True
 
