@@ -18,9 +18,6 @@ from avarsha.items import ProductItem
 class AvarshaSpider(scrapy.Spider):
     def __init__(self, feed_type=None, *args, **kwargs):
         super(AvarshaSpider, self).__init__(*args, **kwargs)
-        #self.start_urls = [kwargs.get('start_url')]
-        #self.start_urls = ["http://" + str(kwargs.get('start_url'))]
-        self.start_urls = []
         self.feeder = Feeds()
         self.url_collections = {}  # list_url:collections
         
@@ -31,7 +28,7 @@ class AvarshaSpider(scrapy.Spider):
         else:
             self.feed_type = 'LIST'
 
-        # self.feed_type = 'PRODUCT'  # donglongtu  modify for product
+        #self.feed_type = 'PRODUCT'  # donglongtu  modify for product
 
     def init_start_urls(self, start_urls):
         for start_url in start_urls:
@@ -44,11 +41,9 @@ class AvarshaSpider(scrapy.Spider):
         # preprocess json response, or xpath does not work
         response = response.replace(body=self._remove_escape(response.body))
 
-        yield self.parse_item(response)
-
-#         if self.feed_type == 'PRODUCT':
-#             yield self.parse_item(response)
-#             return
+        if self.feed_type == 'PRODUCT':
+            yield self.parse_item(response)
+            return
 
         self.log('Parse category link: %s' % response.url, log.DEBUG)
 
@@ -126,11 +121,10 @@ class AvarshaSpider(scrapy.Spider):
         requests = []
         for path in nexts:
             list_url = path
-            #if path.find(base_url) == -1:
-            if path.find("http") == -1:
+            if path.find(base_url) == -1:
                 list_url = base_url + path
             list_urls.append(list_url)
-            request = scrapy.Request(list_url, callback=self.parse_item)
+            request = scrapy.Request(list_url, callback=self.parse)
             requests.append(request)
         return requests
 

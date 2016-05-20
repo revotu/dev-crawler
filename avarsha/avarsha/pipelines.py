@@ -89,21 +89,13 @@ class AvarshaPipeline(object):
         return pr_item
 
     def process_item(self, item, spider):
-        if item.normalize_attributes() is False:
-            raise DropItem("Attributes format error in %s" % item)
-        #self.__assert_necessary_attributes(item)
+#         if item.normalize_attributes() is False:
+#             raise DropItem("Attributes format error in %s" % item)
+#         self.__assert_necessary_attributes(item)
 
-#         if spider.settings['VERSION'] == 'DEV':
-#             return item
         if spider.settings['VERSION'] == 'DEV':
-            index = item['url'].find('//') + len('//')
-            key = item['url'][index:].replace('www.','')
-            if key.find('/') != -1:
-                key = key[:key.find('/')]
-            spider.email_list[key] = spider.email_list.setdefault(key,[]) + list(set(item['email']) - set(spider.email_list.setdefault(key,[])))
-            print spider.email_list
-            return
-            #return item
+            self.storeEmail(item)
+            return item
 
         if spider.settings['CHROME_ENABLED'] is True:
             try:
@@ -165,13 +157,7 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = []
-            wb = load_workbook('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
-            ws = wb.active
-            for i in range(1,326):
-                start_urls.append(ws.cell(row = i,column = 1).value)
-                spider.allowed_domains.append(ws.cell(row = i,column = 1).value[len("http://"):])
-            wb.save('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
+            start_urls = ['http://www.dillards.com/c/juniors-plus-prom-dresses']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -210,15 +196,15 @@ class AvarshaPipeline(object):
         ws.append(data)
         wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
 
-    def storeEmail(self ,url , email):
-        wb = load_workbook('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
+    def storeEmail(self ,item):
+        wb = load_workbook('D:/www/dev-web-crawler/promdress.xlsx')
         ws = wb.active
-        email = '\t'.join(email)
-        for i in range(1,326):
-            if ws.cell(row = i,column = 1).value == url:
-                ws.cell(row = i,column = 2).value = email
-                break
-        wb.save('D:/www/dev-web-crawler/B2B-Lists-2016-05-10.xlsx')
+        data = []
+        data.append(item['sku'])
+        data.append(item['title'])
+        data.append(item['price'][len('USD '):])
+        ws.append(data)
+        wb.save('D:/www/dev-web-crawler/promdress.xlsx')
         
     
     def store_to_excel(self , item):

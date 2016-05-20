@@ -2,6 +2,7 @@
 # author: tanyafeng huoda
 
 import urllib2
+import re
 
 import scrapy.cmdline
 from scrapy.selector import Selector
@@ -14,6 +15,7 @@ _spider_name = 'dillards'
 class DillardsSpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["dillards.com"]
+    sku = 328891
     storeId = ''
     catalogId = ''
     langId = ''
@@ -29,7 +31,7 @@ class DillardsSpider(AvarshaSpider):
         url1 = 'http://www.dillards.com/shop/DDS_ProductListingView?storeId='
         url2 = '&langId='
         url3 = '&catalogId='
-        url4 = ('&requesttype=ajax&resultType=products&pageView=grid&'
+        url4 = ('&requesttype=ddsAjax&resultType=products&pageView=grid&'
             'searchTerm=&pageSize=100&beginIndex=0&orderBy=1&categoryId=')
         url5 = '&facet='
         page = urllib2.urlopen(url).read()
@@ -70,17 +72,19 @@ class DillardsSpider(AvarshaSpider):
 
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
-
-        base_url = 'http://www.dillards.com'
-        items_xpath = '//*[@class="product-tile"]//a[1]//@href'
-
-        # don't need to change this line
-        return self._find_items_from_list_page(
-            sel, base_url, items_xpath, item_urls)
+        requests = []
+        result = sel.response.body.strip()
+        products = re.findall(r"\"catentryId\":\"(.+?)\".+?\"nameForURL\":\"(.+?)\"", result, re.I)
+        for v in products:
+            item_url = 'http://www.dillards.com/p/' + v[1] + '/' + v[0]
+            item_urls.append(item_url)
+            request = scrapy.Request(item_url, callback=self.parse_item)
+            requests.append(request)
+        return requests
 
     def find_nexts_from_list_page(self, sel, list_urls):
         """find next pages in category url"""
-
+        return []
         requests = []
         total_xpath = '//*[@class="hidden-xs"]/text()'
         data = sel.xpath(total_xpath).extract()
@@ -128,6 +132,8 @@ class DillardsSpider(AvarshaSpider):
                     item['brand_name'] = brand
 
     def _extract_sku(self, sel, item):
+        item['sku'] = self.sku
+        return
         sku_xpath = '//*[@class="sku"]/span/text()'
         data = sel.xpath(sku_xpath).extract()
         if len(data) != 0:
@@ -154,11 +160,14 @@ class DillardsSpider(AvarshaSpider):
             '//img//@data-fullimage')
         data = sel.xpath(img_xpath).extract()
         if len(data) != 0:
+            index = 1 
             base_url = 'http://dimg.dillards.com/is/image/DillardsZoom/'
             for img in data:
                 img = img.strip()
-                img = base_url + img + '?wid=1500'
+                img = base_url + img + '?wid=1500&sku=' + str(self.sku) + '&index=' + str(index)
+                index += 1
                 imgs.append(img)
+            self.sku += 1
             item['image_urls'] = imgs
 
     def _extract_colors(self, sel, item):

@@ -15,7 +15,7 @@ _spider_name = 'davidsbridal'
 class DavidsbridalSpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["davidsbridal.com"]
-    index = 1
+    index = 328640
 
     def __init__(self, *args, **kwargs):
         super(DavidsbridalSpider, self).__init__(*args, **kwargs)
@@ -56,6 +56,8 @@ class DavidsbridalSpider(AvarshaSpider):
         item['brand_name'] = 'David\'s Bridal'
 
     def _extract_sku(self, sel, item):
+        item['sku'] = self.index
+        return
         shop_owner_sn_xpath = '//li[@class="active"]/text()'
         data = sel.xpath(shop_owner_sn_xpath).extract()
         if len(data) != 0:
@@ -65,6 +67,7 @@ class DavidsbridalSpider(AvarshaSpider):
         pass
 
     def _extract_description(self, sel, item):
+        return
         description_tmp = ''
         description_xpath = '//div[@class="truncated-text"]/p'
         data = sel.xpath(description_xpath).extract()
@@ -87,27 +90,12 @@ class DavidsbridalSpider(AvarshaSpider):
     def _extract_image_urls(self, sel, item):
         suffix = 1
         img_url_list = []
-        color_list_xpath = ('//li[@class="quickShipClass"]/@id | //li'
-            '[@class="allColorsClass"]/@id')
-        data = sel.xpath(color_list_xpath).extract()
+        img_xpath = '//img[@id="productMainImage"]/@src'
+        data = sel.xpath(img_xpath).extract()[0]
         img_tmp = 'http://img.davidsbridal.com/is/image/DavidsBridalInc/'
-        idx1 = sel.response.body.strip('\n')
-        idx1 = idx1.replace(' ', '')
-        idx1 = idx1[idx1.find('productMainImage'):]
-        if idx1.find('Set-') != -1:
-            idx1 = idx1[idx1.find('Set-'):]
-            idx2 = idx1[:idx1.find('?')]
-            img_tmp1 = (img_tmp + idx2 + '?req=set,json,UTF-8&labelkey=label'
+        idx2 = data[data.rfind('/') + 1:data.find('?')].replace(" ", "%20")
+        img_tmp1 = (img_tmp + idx2 + '?req=set,json,UTF-8&labelkey=label'
                 + '&handler=s7sdkJSONResponse')
-#         for i in range(len(data)):
-#             idx_tmp = idx2[idx2.rfind('-') + 1:]
-#             if data[i].find(' ') != -1:
-#                 if data[i].replace(' ', '') == idx_tmp:
-#                     idx2 = idx2[:idx2.rfind('-') + 1]
-#                     idx3 = idx2 + data[i]
-#                     idx3 = urllib.quote(idx3.encode('utf-8'))
-#                     img_tmp1 = (img_tmp + idx3 + '?req=set,json,UTF-8&labelkey=label'
-#                         + '&handler=s7sdkJSONResponse')
         try:
             img_tmp1
             content = urllib2.urlopen(img_tmp1).read()
@@ -129,6 +117,7 @@ class DavidsbridalSpider(AvarshaSpider):
 
 
     def _extract_colors(self, sel, item):
+        return
         color_list_xpath = ('//li[@class="quickShipClass"]/@id | //li'
             '[@class="allColorsClass"]/@id')
         data = sel.xpath(color_list_xpath).extract()
@@ -158,7 +147,6 @@ class DavidsbridalSpider(AvarshaSpider):
             idx1 = idx1[idx_num_tmp + 25:]
             price_tmp = idx1[:idx1.find('\"]')]
         if price_tmp != item['price'].replace('USD ' , ''):
-            print price_tmp
             item['list_price'] = self._format_price('USD', price_tmp)
 
     def _extract_low_price(self, sel, item):
@@ -168,6 +156,7 @@ class DavidsbridalSpider(AvarshaSpider):
         pass
 
     def _extract_is_free_shipping(self, sel, item):
+        return
         idx1 = sel.response.body
         idx1 = idx1.replace('\n' , '')
         while idx1.find('product_sale_price') != -1:
@@ -187,6 +176,7 @@ class DavidsbridalSpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        return
         alltext = sel.response.body
         indx1 = alltext.find("productId:") + len("productId:")
         indx2 = alltext.find('"', indx1) + len('"')
