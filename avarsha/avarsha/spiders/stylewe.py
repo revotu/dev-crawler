@@ -2,7 +2,6 @@
 # @author: donglongtu
 
 import scrapy.cmdline
-import urllib
 from scrapy.selector import Selector
 
 from avarsha_spider import AvarshaSpider
@@ -94,7 +93,7 @@ class StyleweSpider(AvarshaSpider):
         images = []
         if len(data) != 0:
             for index,img in enumerate(data):
-                images.append(urllib.unquote(img) + '?index=' + str(index + 1) + '&sku=' + str(item['sku']))
+                images.append(img + '#index=' + str(index + 1) + '&sku=' + str(item['sku']))
         item['image_urls'] = images
 
     def _extract_colors(self, sel, item):
