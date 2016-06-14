@@ -28,7 +28,7 @@ class AvarshaSpider(scrapy.Spider):
         else:
             self.feed_type = 'LIST'
 
-        #self.feed_type = 'PRODUCT'  # donglongtu  modify for product
+        self.feed_type = 'PRODUCT'  # donglongtu  modify for product
 
     def init_start_urls(self, start_urls):
         for start_url in start_urls:

@@ -62,6 +62,9 @@ class ProductItem(Item):
     terms = Field()
     referer = Field()
     email = Field()
+    
+    dir1 = Field()
+    dir2 = Field()
 
     def normalize_attributes(self):
         normalized_status = True
@@ -105,6 +108,8 @@ class ProductItem(Item):
                            'review_list':list,
                            'terms':basestring,
                            'referer':basestring,
+                           'dir1':basestring,
+                           'dir2':basestring,
                            'email':list}
 
         assert_return = True

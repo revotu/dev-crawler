@@ -9,6 +9,7 @@
 
 import rfc822
 import time
+import json
 from cStringIO import StringIO
 from PIL import Image
 from sets import Set
@@ -157,7 +158,13 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = ['http://www.dillards.com/c/juniors-plus-prom-dresses']
+            start_urls = []
+            wb = load_workbook('D:/www/dev-web-crawler/products_url.xlsx')
+            ws = wb.active
+            for i in range(1,16198):
+                start_urls.append(ws.cell(row = i,column = 1).value)
+            wb.save('D:/www/dev-web-crawler/products_url.xlsx')
+            #start_urls = ['https://www.stylewe.com/product/multicolor-one-shoulder-casual-t-shirt-4769.html']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -197,14 +204,20 @@ class AvarshaPipeline(object):
         wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
 
     def storeEmail(self ,item):
-        wb = load_workbook('D:/www/dev-web-crawler/promdress.xlsx')
+        wb = load_workbook('D:/www/dev-web-crawler/products.xlsx')
         ws = wb.active
         data = []
+        data.append(item['url'])
         data.append(item['sku'])
         data.append(item['title'])
-        data.append(item['price'][len('USD '):])
+        data.append(item['brand_name'] if 'brand_name' in item else '')
+        data.append(item['price'][len('USD '):] if 'price' in item else '')
+        data.append(','.join(item['sizes']) if 'sizes' in item else '')
+        data.append(json.dumps(item['features']) if 'features' in item else '')
+        data.append(item['dir1'] if 'dir1' in item else '')
+        data.append(item['dir2'] if 'dir2' in item else '')
         ws.append(data)
-        wb.save('D:/www/dev-web-crawler/promdress.xlsx')
+        wb.save('D:/www/dev-web-crawler/products.xlsx')
         
     
     def store_to_excel(self , item):
