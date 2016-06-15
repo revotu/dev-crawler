@@ -88,6 +88,7 @@ class StyleweSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
+        return
         img_xpath = '//div[@id="smallView"]/div/ul/li/a/img/@data-big-src'
         data = sel.xpath(img_xpath).extract()
         images = []

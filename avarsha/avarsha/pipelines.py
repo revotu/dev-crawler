@@ -216,6 +216,7 @@ class AvarshaPipeline(object):
         data.append(json.dumps(item['features']) if 'features' in item else '')
         data.append(item['dir1'] if 'dir1' in item else '')
         data.append(item['dir2'] if 'dir2' in item else '')
+        data.append(item['description'] if 'description' in item else '')
         ws.append(data)
         wb.save('D:/www/dev-web-crawler/products.xlsx')
         
