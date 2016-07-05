@@ -95,7 +95,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store(item)
+            #self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -164,20 +164,11 @@ class AvarshaPipeline(object):
 #             for i in range(1,490):
 #                 start_urls.append(ws.cell(row = i,column = 1).value)
 #             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            start_urls = ['http://www.augustajones.com/products.php?type=dress&search=&page=1',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=2',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=3',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=4',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=5',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=6',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=7',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=8',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=9',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=10',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=11',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=12',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=13',
-                          'http://www.augustajones.com/products.php?type=dress&search=&page=14']
+            start_urls = ['http://www.brideandco.co.za/product-category/wedding-dresses/page/2/',
+                          'http://www.brideandco.co.za/product-category/special-occasions/page/2/',
+                          'http://www.brideandco.co.za/product-category/wedding-retinue/bridesmaids/page/2/',
+                          'http://www.brideandco.co.za/product-category/wedding-retinue/flower-girls/page/2/',
+                          'http://www.brideandco.co.za/product-category/wedding-retinue/mother-of-the-bride/page/2/']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
