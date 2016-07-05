@@ -6,7 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
-
+import os.path
 import rfc822
 import time
 import json
@@ -95,7 +95,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.storeEmail(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -158,13 +158,26 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             # for test for spider
-            start_urls = []
-            wb = load_workbook('D:/www/dev-web-crawler/products_url.xlsx')
-            ws = wb.active
-            for i in range(1,16198):
-                start_urls.append(ws.cell(row = i,column = 1).value)
-            wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            #start_urls = ['https://www.stylewe.com/product/multicolor-one-shoulder-casual-t-shirt-4769.html']
+#             start_urls = []
+#             wb = load_workbook('D:/www/dev-web-crawler/products_url.xlsx')
+#             ws = wb.active
+#             for i in range(1,490):
+#                 start_urls.append(ws.cell(row = i,column = 1).value)
+#             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
+            start_urls = ['http://www.augustajones.com/products.php?type=dress&search=&page=1',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=2',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=3',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=4',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=5',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=6',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=7',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=8',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=9',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=10',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=11',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=12',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=13',
+                          'http://www.augustajones.com/products.php?type=dress&search=&page=14']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -194,35 +207,31 @@ class AvarshaPipeline(object):
             raise DropItem("Download images error.")
     
     def init_to_excel(self , item):
-        wb = load_workbook('D:/www/dev-web-crawler/terms-products.xlsx')
+        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+        wb = load_workbook(os.path.join(dir,'terms-products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['referer'])
         data.append(item['url'])
         data.append(item['product_id'])
         ws.append(data)
-        wb.save('D:/www/dev-web-crawler/terms-products.xlsx')
+        wb.save(os.path.join(dir,'terms-products.xlsx'))
 
-    def storeEmail(self ,item):
-        wb = load_workbook('D:/www/dev-web-crawler/products.xlsx')
+    def store(self ,item):
+        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+        wb = load_workbook(os.path.join(dir,'products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['url'])
         data.append(item['sku'])
-        data.append(item['title'])
-        data.append(item['brand_name'] if 'brand_name' in item else '')
-        data.append(item['price'][len('USD '):] if 'price' in item else '')
-        data.append(','.join(item['sizes']) if 'sizes' in item else '')
-        data.append(json.dumps(item['features']) if 'features' in item else '')
-        data.append(item['dir1'] if 'dir1' in item else '')
-        data.append(item['dir2'] if 'dir2' in item else '')
         data.append(item['description'] if 'description' in item else '')
         ws.append(data)
-        wb.save('D:/www/dev-web-crawler/products.xlsx')
+        wb.save(os.path.join(dir,'products.xlsx'))
         
     
     def store_to_excel(self , item):
-        wb = load_workbook('D:/www/dev-web-crawler/products.xlsx')
+        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+        wb = load_workbook(os.path.join(dir,'products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['sku'])
@@ -264,10 +273,10 @@ class AvarshaPipeline(object):
         data.append('789')
         
         ws.append(data)
-        wb.save('D:/www/dev-web-crawler/products.xlsx')
+        wb.save(os.path.join(dir,'products.xlsx'))
         
         if len(item['review_list']) != 0:
-            wb = load_workbook('D:/www/dev-web-crawler/reviews.xlsx')
+            wb = load_workbook(os.path.join(dir,'reviews.xlsx'))
             ws = wb.active
             for rev in item['review_list']:
                 reviews = []
@@ -276,7 +285,7 @@ class AvarshaPipeline(object):
                 reviews.append(rev['content'])
                 
                 ws.append(reviews)
-                wb.save('D:/www/dev-web-crawler/reviews.xlsx')
+                wb.save(os.path.join(dir,'reviews.xlsx'))
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):
