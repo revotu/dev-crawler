@@ -85,9 +85,15 @@ class BrideandcoSpider(AvarshaSpider):
                 img_xpath = '//div[@class="mg_item_featured"]//a/@href'
                 data = sel.xpath(img_xpath).extract()
                 imgs = []
+                imgback = []
                 if len(data) != 0:
-                    imgs = [ 'http:' + img + '#index=' + str(index + 1) + '&sku=' + pid for index,img in enumerate(data)]
-                imglist += imgs
+                    imgs = [ img + '#index=' + str(index + 1) + '&sku=' + pid for index,img in enumerate(data)]
+                    for i in imgs:
+                        if i.find('http') == -1:
+                            imgback.append('http:' + i)
+                        else :
+                            imgback.append(i)
+                imglist += imgback
                 print imglist
         item['image_urls'] = imglist
 
