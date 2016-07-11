@@ -95,7 +95,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            #self.store(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -164,9 +164,7 @@ class AvarshaPipeline(object):
 #             for i in range(1,490):
 #                 start_urls.append(ws.cell(row = i,column = 1).value)
 #             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            start_urls = ['http://www.brideandco.co.za/product-category/wedding-dresses/page/2/',
-                          'http://www.brideandco.co.za/product-category/wedding-retinue/page/2/',
-                          'http://www.brideandco.co.za/product-category/special-occasions/page/2/',]
+            start_urls = ['http://www.kingwebtools.com/pink_princess/dynamic_paging/dbresults_ajax.php?section_id=flower-girl-dresses&pr=&pg=1&im=&products_per_page=99999']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -212,8 +210,10 @@ class AvarshaPipeline(object):
         ws = wb.active
         data = []
         data.append(item['url'])
-        data.append(item['sku'])
-        data.append(item['description'] if 'description' in item else '')
+        data.append(item['sku'])        
+        data.append(item['title'])
+        data.append(item['price'])
+        data.append('\n'.join(item['description']) if 'description' in item else '')
         ws.append(data)
         wb.save(os.path.join(dir,'products.xlsx'))
         
