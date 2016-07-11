@@ -164,9 +164,9 @@ class AvarshaPipeline(object):
 #             for i in range(1,490):
 #                 start_urls.append(ws.cell(row = i,column = 1).value)
 #             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            start_urls = ['http://www.herabridal.co.nz/our-gowns/',
-                          'http://www.herabridal.co.nz/bridal-party-dresses/bridesmaid-dresses/',
-                          'http://www.herabridal.co.nz/bridal-party-dresses/flower-girl-dresses/',]
+            start_urls = ['http://www.brideandco.co.za/product-category/wedding-dresses/page/2/',
+                          'http://www.brideandco.co.za/product-category/wedding-retinue/page/2/',
+                          'http://www.brideandco.co.za/product-category/special-occasions/page/2/',]
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
