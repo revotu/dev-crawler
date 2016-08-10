@@ -15,6 +15,7 @@ from PIL import Image
 from sets import Set
 from twisted.internet import defer
 
+from scrapy.http import Request
 from scrapy import log
 from scrapy.contrib.pipeline.files import S3FilesStore
 from scrapy.contrib.pipeline.images import ImagesPipeline
@@ -164,7 +165,15 @@ class AvarshaPipeline(object):
 #             for i in range(1,490):
 #                 start_urls.append(ws.cell(row = i,column = 1).value)
 #             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            start_urls = ['http://www.kingwebtools.com/pink_princess/dynamic_paging/dbresults_ajax.php?section_id=flower-girl-dresses&pr=&pg=1&im=&products_per_page=99999']
+            start_urls = ['http://veromia.co.uk/Sonsie.html',]
+                          #'http://veromia.co.uk/Bellice.html',]
+#                           'http://veromia.co.uk/Veromia-Bridesmaid.html',
+#                           'http://veromia.co.uk/DZage-Bridesmaid.html',
+#                           'http://veromia.co.uk/Dressed-Up.html',
+#                           'http://veromia.co.uk/Dress-Code.html',
+#                           'http://veromia.co.uk/Irresistible.html',
+#                           'http://veromia.co.uk/Veromia-Occasions.html',
+#                           'http://veromia.co.uk/Veromia-Bridal.html',]
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -194,8 +203,8 @@ class AvarshaPipeline(object):
             raise DropItem("Download images error.")
     
     def init_to_excel(self , item):
-        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-        wb = load_workbook(os.path.join(dir,'terms-products.xlsx'))
+        dir = os.path.dirname(os.path.realpath(__file__))
+        wb = load_workbook(os.path.join(dir,'..','..','terms-products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['referer'])
@@ -205,8 +214,8 @@ class AvarshaPipeline(object):
         wb.save(os.path.join(dir,'terms-products.xlsx'))
 
     def store(self ,item):
-        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-        wb = load_workbook(os.path.join(dir,'products.xlsx'))
+        dir = os.path.dirname(os.path.realpath(__file__))
+        wb = load_workbook(os.path.join(dir,'..','..','products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['url'])
@@ -219,8 +228,8 @@ class AvarshaPipeline(object):
         
     
     def store_to_excel(self , item):
-        dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-        wb = load_workbook(os.path.join(dir,'products.xlsx'))
+        dir = os.path.dirname(os.path.realpath(__file__))
+        wb = load_workbook(os.path.join(dir,'..','..','products.xlsx'))
         ws = wb.active
         data = []
         data.append(item['sku'])
@@ -341,3 +350,34 @@ class AvarshaImagePipeline(ImagesPipeline):
         orig_image = Image.open(StringIO(response.body))
         width, height = orig_image.size
         return (width, height)
+
+    def file_path(self, request, response=None, info=None):
+        ## start of deprecation warning block (can be removed in the future)
+        def _warn():
+            from scrapy.exceptions import ScrapyDeprecationWarning
+            import warnings
+            warnings.warn('ImagesPipeline.image_key(url) and file_key(url) methods are deprecated, '
+                          'please use file_path(request, response=None, info=None) instead',
+                          category=ScrapyDeprecationWarning, stacklevel=1)
+
+        # check if called from image_key or file_key with url as first argument
+        if not isinstance(request, Request):
+            _warn()
+            url = request
+        else:
+            url = request.url
+
+        # detect if file_key() or image_key() methods have been overridden
+        if not hasattr(self.file_key, '_base'):
+            _warn()
+            return self.file_key(url)
+        elif not hasattr(self.image_key, '_base'):
+            _warn()
+            return self.image_key(url)
+        ## end of deprecation warning block
+        
+        index = url[url.find('#index=') + len('#index='):url.find('&sku=')]
+        sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
+        dir = url[url.find('&dir=') + len('&dir='):]
+        
+        return 'veromia/%s/%s_(%s).jpg' % (dir,sku,index)
