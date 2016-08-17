@@ -23,10 +23,10 @@ NEWSPIDER_MODULE = 'avarsha.spiders'
 #LOG_FILE = 'log.txt'
 
 # Crawl responsibly by identifying yourself
-#USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; Acoo Browser 1.98.744; .NET CLR 3.5.30729)'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; Acoo Browser 1.98.744; .NET CLR 3.5.30729)'
+#USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
 #DOWNLOAD_DELAY = 1
-DOWNLOAD_DELAY = 1.5
+DOWNLOAD_DELAY = 2.5
 COOKIES_ENABLED = True
 COOKIES_DEBUG = False
 
