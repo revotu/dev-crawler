@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store(item)
+            #self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -165,15 +165,111 @@ class AvarshaPipeline(object):
 #             for i in range(1,490):
 #                 start_urls.append(ws.cell(row = i,column = 1).value)
 #             wb.save('D:/www/dev-web-crawler/products_url.xlsx')
-            start_urls = ['http://veromia.co.uk/Sonsie.html',]
-                          #'http://veromia.co.uk/Bellice.html',]
-#                           'http://veromia.co.uk/Veromia-Bridesmaid.html',
-#                           'http://veromia.co.uk/DZage-Bridesmaid.html',
-#                           'http://veromia.co.uk/Dressed-Up.html',
-#                           'http://veromia.co.uk/Dress-Code.html',
-#                           'http://veromia.co.uk/Irresistible.html',
-#                           'http://veromia.co.uk/Veromia-Occasions.html',
-#                           'http://veromia.co.uk/Veromia-Bridal.html',]
+            start_urls = [  'https://moffichina.1688.com/?spm=a261y.7663282.0.0.NLm4Tg',
+                            'https://shop1414600960557.1688.com/?spm=a261y.7663282.0.0.EEeVYT',
+                            'https://disiboli.1688.com/?spm=a261y.7663282.0.0.6rJNhx',
+                            'https://yazefs.1688.com/?spm=a261y.7663282.0.0.OrFs7L',
+                            'https://nmtfashion.1688.com/?spm=a261y.7663282.0.0.rmQEmS',
+                            'https://463426.1688.com/?spm=a261y.7663282.0.0.3UABwj',
+                            'https://shop1438966412150.1688.com/?spm=a261y.7663282.0.0.M47i5u',
+                            'https://richcoco.1688.com/?spm=a261y.7663282.0.0.cy4ZFr',
+                            'https://bootyjeans.1688.com/?spm=a261y.7663282.0.0.VV05np',
+                            'https://mengtuibian.1688.com/?spm=a261y.7663282.0.0.yJ11be',
+                            'https://shandafz.1688.com/?spm=a261y.7663282.0.0.Wdsc5p',
+                            'https://yigelila.1688.com/?spm=a261y.7663282.0.0.YWBTTP',
+                            'https://glie88.1688.com/?spm=a261y.7663282.0.0.6AsJtH',
+                            'https://glfs99.1688.com/?spm=a261y.7663282.0.0.Ieeain',
+                            'https://ivy1688.1688.com/?spm=a261y.7663282.0.0.5Bf4UC',
+                            'https://wuyugongzuoshi.1688.com/?spm=a261y.7663282.0.0.ByKAjh',
+                            'https://shop1457973990418.1688.com/?spm=a261y.7663282.0.0.nJcYLA',
+                            'https://dxyuanchuang.1688.com/?spm=a261y.7663282.0.0.j660yh',
+                            'https://mad925.1688.com/?spm=a261y.7663282.0.0.Ghq1Qv',
+                            'https://yufei1910.1688.com/?spm=a261y.7663282.0.0.l2JIlJ',
+                            'https://domeya.1688.com/?spm=a261y.7663282.0.0.iRq8C5',
+                            'https://shop1466070500082.1688.com/?spm=a261y.7663282.0.0.ghDUkS',
+                            'https://shop1389977563097.1688.com/?spm=a261y.7663282.0.0.3OewOW',
+                            'https://ninethink.1688.com/?spm=a261y.7663282.0.0.d96QZV',
+                            'https://lztlylzt.1688.com/?spm=a261y.7663282.0.0.71J83c',
+                            'https://taianniuzai.1688.com/?spm=a261y.7663282.0.0.BhM6AM',
+                            'https://shop1382547243040.1688.com/?spm=a261y.7663282.0.0.HENC6h',
+                            'https://shop1455814290590.1688.com/?spm=a261y.7663282.0.0.wALm7U',
+                            'https://shop1369242245680.1688.com/?spm=a261y.7663282.0.0.viaBHN',
+                            'https://gzll4321.1688.com/?spm=a261y.7663282.0.0.w9lfaP',
+                            'https://styleshop.1688.com/?spm=a261y.7663282.0.0.lnVQIP',
+                            'https://shop1457973990418.1688.com/?spm=a261y.7663282.0.0.Ind8MF',
+                            'https://norakids.1688.com/?spm=a261y.7663282.0.0.UCJ7Sg',
+                            'https://shop1457369874969.1688.com/?spm=a261y.7663282.0.0.POMK8Z',
+                            'https://tianyigarment888.1688.com/?spm=a261y.7663282.0.0.oHgtuT',
+                            'https://inpluslady.1688.com/?spm=a261y.7663282.0.0.OD1FGT',
+                            'https://zhizaolian.1688.com/?spm=a261y.7663282.0.0.T3iEjZ',
+                            'https://tailorh.1688.com/?spm=a261y.7663282.0.0.EEbcD7',
+                            'https://shop1443545626425.1688.com/?spm=a261y.7663282.0.0.jqeeJa',
+                            'https://shop1386602621902.1688.com/?spm=a261y.7663282.0.0.andIS1',
+                            'https://boran2015.1688.com/?spm=a261y.7663282.0.0.4KIoh6',
+                            'https://shop1387472153459.1688.com/?spm=a261y.7663282.0.0.buHFt6',
+                            'https://nantaoli.1688.com/?spm=a261y.7663282.0.0.sVppGr',
+                            'https://shop1456159917797.1688.com/?spm=a261y.7663282.0.0.vfeCww',
+                            'https://fengshangmy.1688.com/?spm=a261y.7663282.0.0.BtzrEw',
+                            'https://shop1468515342367.1688.com/?spm=a261y.7663282.0.0.gRHmaI',
+                            'https://tailring2013.1688.com/?spm=a261y.7663282.0.0.T0HqXh',
+                            'https://szmdfs.1688.com/?spm=a261y.7663282.0.0.eOE99w',
+                            'https://shop1411663726915.1688.com/?spm=a261y.7663282.0.0.zOKkMU',
+                            'https://jzsecret.1688.com/?spm=a261y.7663282.0.0.jkP1ph',
+                            'https://sunbay.1688.com/?spm=a261y.7663282.0.0.QCqtzu',
+                            'https://praguefactory.1688.com/?spm=a261y.7663282.0.0.Tic5sM',
+                            'https://qiaocode.1688.com/?spm=a261y.7663282.0.0.hVZkMQ',
+                            'https://shop1418648091957.1688.com/?spm=a261y.7663282.0.0.zXiaqU',
+                            'https://esisto.1688.com/?spm=a261y.7663282.0.0.FaTXNy',
+                            'https://shop1430413726436.1688.com/?spm=a261y.7663282.0.0.uFinM9',
+                            'https://shop1462467358748.1688.com/?spm=a261y.7663282.0.0.7NsFMb',
+                            'https://uperfeet.1688.com/?spm=a261y.7663282.0.0.2xFoVS',
+                            'https://threasa365.1688.com/?spm=a261y.7663282.0.0.jJjMa2',
+                            'https://yikexin.1688.com/?spm=a261y.7663282.0.0.w2vDYi',
+                            'https://shop1356491221946.1688.com/?spm=a261y.7663282.0.0.d4492d',
+                            'https://room404fashion.1688.com/?spm=a261y.7663282.0.0.OO8gHg',
+                            'https://shop1457800611660.1688.com/?spm=a261y.7663282.0.0.hthLLg',
+                            'https://aitaofs.1688.com/?spm=a261y.7663282.0.0.koyHru',
+                            'https://shop1417020263291.1688.com/?spm=a261y.7663282.0.0.21Pxpz',
+                            'https://shop1458061328757.1688.com/?spm=a261y.7663282.0.0.hcbYUt',
+                            'https://shop1460286234372.1688.com/?spm=a261y.7663282.0.0.anVa1H',
+                            'https://shop1433565999145.1688.com/?spm=a261y.7663282.0.0.soIK8l',
+                            'https://nellbang.1688.com/?spm=a261y.7663282.0.0.wiue1z',
+                            'https://ivy1688.1688.com/?spm=a261y.7663282.0.0.pf4OWl',
+                            'https://jieranbutong2010.1688.com/?spm=a261y.7663282.0.0.KlkhFk',
+                            'https://15612999888.1688.com/?spm=a261y.7663282.0.0.0i7HJx',
+                            'https://8666666.1688.com/?spm=a261y.7663282.0.0.qNeVx4',
+                            'https://shop1459492670165.1688.com/?spm=a261y.7663282.0.0.ug4Zpm',
+                            'https://zhenlepf.1688.com/?spm=a261y.7663282.0.0.Bkw8dY',
+                            'https://szoukasi.1688.com/?spm=a261y.7663282.0.0.0Aued9',
+                            'https://txsikya.1688.com/?spm=a261y.7663282.0.0.I67MmA',
+                            'https://nellbang.1688.com/?spm=a261y.7663282.0.0.Mur2pJ',
+                            'https://diddistudio.1688.com/?spm=a261y.7663282.0.0.EsYYyh',
+                            'https://huihua163.1688.com/?spm=a261y.7663282.0.0.AYY1MD',
+                            'https://bhknit.1688.com/?spm=a261y.7663282.0.0.bXqSqB',
+                            'https://woolchina.1688.com/?spm=a261y.7663282.0.0.i7ohJ5',
+                            'https://txsikya.1688.com/?spm=a261y.7663282.0.0.7bLEOA',
+                            'https://vinnie.1688.com/?spm=a261y.7663282.0.0.zyutgB',
+                            'https://yiluqizhiyichang.1688.com/?spm=a261y.7663282.0.0.DnieNB',
+                            'https://shop1433524250700.1688.com/?spm=a261y.7663282.0.0.IuWEZf',
+                            'https://ruiqiuer888.1688.com/?spm=a261y.7663282.0.0.Ba8vYG',
+                            'https://shop1463418018875.1688.com/?spm=a261y.7663282.0.0.eLp8fa',
+                            'https://mymissonforyoung.1688.com/?spm=a261y.7663282.0.0.jXsrjT',
+                            'https://nnlyt.1688.com/?spm=a261y.7663282.0.0.VwQ1XP',
+                            'https://xinlio.1688.com/?spm=a261y.7663282.0.0.Ww02g4',
+                            'https://shop1430758528047.1688.com/?spm=a261y.7663282.0.0.fdKlQD',
+                            'https://daizi520.1688.com/?spm=a261y.7663282.0.0.UhfS3U',
+                            'https://leatherhandmade.1688.com/?spm=a261y.7663282.0.0.vDQB14',
+                            'https://shop1438361572335.1688.com/?spm=a261y.7663282.0.0.c6ofxI',
+                            'https://shop1395334679295.1688.com/?spm=a261y.7663282.0.0.26RiSA',
+                            'https://shop1450803158402.1688.com/?spm=a261y.7663282.0.0.dh2hiz',
+                            'https://shop1405183957228.1688.com/?spm=a261y.7663282.0.0.oJJMm6',
+                            'https://shop1459528886818.1688.com/?spm=a261y.7663282.0.0.SphE0B',
+                            'https://colloyesbikini.1688.com/?spm=a261y.7663282.0.0.behzed',
+                            'https://shop1438855592036.1688.com/?spm=a261y.7663282.0.0.Lgtlyo',
+                            'https://shop1430066700054.1688.com/?spm=a261y.7663282.0.0.tEIrQJ',
+                            'https://iglamshop.1688.com/?spm=a261y.7663282.0.0.PwB6tC',
+                            'https://shop1382028923435.1688.com/?spm=a261y.7663282.0.0.1B2yW8']
+
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -220,10 +316,9 @@ class AvarshaPipeline(object):
         data = []
         data.append(item['url'])
         data.append(item['sku'])        
-        data.append(item['title'])
-        data.append(item['price'])
-        data.append('\n'.join(item['description']) if 'description' in item else '')
+        data.append(json.dumps(item['features'], ensure_ascii=False))
         ws.append(data)
+        print 'write to excel ok'
         wb.save(os.path.join(dir,'products.xlsx'))
         
     
@@ -376,8 +471,8 @@ class AvarshaImagePipeline(ImagesPipeline):
             return self.image_key(url)
         ## end of deprecation warning block
         
-        index = url[url.find('#index=') + len('#index='):url.find('&sku=')]
+        index = url[url.find('?index=') + len('?index='):url.find('&sku=')]
         sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return 'veromia/%s/%s_(%s).jpg' % (dir,sku,index)
+        return '1688/%s/%s_(%s).jpg' % (dir,sku,index)
