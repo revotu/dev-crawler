@@ -132,14 +132,16 @@ class AlibabaSpider(AvarshaSpider):
 #         if len(data) == 0:
 #             return []
 #         member_id = data[0]
-        if sel.response.url in self.map:
-            member_id = self.map[sel.response.url]
-        else:
-            return []
-        
+#         if sel.response.url in self.map:
+#             member_id = self.map[sel.response.url]
+#         else:
+#             return []
+        member_id = sel.response.url[sel.response.url.find('winport/') + len('winport/'): sel.response.url.find('.html')]
         pageIndex = 1
         sku = 1
         requests = []
+        prev_ids = []
+        curr_ids = []
         while True:
             list_url = 'http://m.1688.com/winport/asyncView?memberId=' + str(member_id) + '&pageIndex=' + str(pageIndex) + '&_async_id=offerlist%3Aoffers'
             content = urllib2.urlopen(list_url).read()
@@ -150,8 +152,11 @@ class AlibabaSpider(AvarshaSpider):
             data = offerId_reg.findall(content)
             if len(data) == 0:
                 break
+            curr_ids = data
+            if curr_ids == prev_ids:
+                break
             for offerId in data:
-                site_name = sel.response.url[sel.response.url.find('://') + len('://'):sel.response.url.find('.1688.com')]
+                site_name = member_id
                 item_url = 'https://detail.1688.com/offer/%s.html?sitename=%s&sku=%s' % (offerId ,site_name ,sku)
                 print item_url
                 item_urls.append(item_url)
@@ -159,6 +164,7 @@ class AlibabaSpider(AvarshaSpider):
                 requests.append(request)
                 sku += 1
             pageIndex += 1
+            prev_ids = curr_ids
         return requests
 
     def find_nexts_from_list_page(self, sel, list_urls):
