@@ -269,7 +269,7 @@ class AvarshaPipeline(object):
                             'https://shop1430066700054.1688.com/?spm=a261y.7663282.0.0.tEIrQJ',
                             'https://iglamshop.1688.com/?spm=a261y.7663282.0.0.PwB6tC',
                             'https://shop1382028923435.1688.com/?spm=a261y.7663282.0.0.1B2yW8']
-
+#             start_urls = ['https://iglamshop.1688.com/?spm=a261y.7663282.0.0.PwB6tC']
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,

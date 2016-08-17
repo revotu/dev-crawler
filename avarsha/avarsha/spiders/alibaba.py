@@ -81,6 +81,7 @@ class AlibabaSpider(AvarshaSpider):
         
         if len(key) != 0 and len(value) != 0:
             item['features'] = dict(zip(key,value))
+        item['features']['url'] = sel.response.url[:sel.response.url.find('?sitename=')]
         sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
         sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
         fd = open(sitename, "a")
