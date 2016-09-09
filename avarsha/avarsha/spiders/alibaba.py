@@ -127,6 +127,7 @@ class AlibabaSpider(AvarshaSpider):
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
 
+        return []
 #         member_id_reg = re.compile(r'member_id:"(.+?)"')
 #         data = member_id_reg.findall(sel.response.body)
 #         if len(data) == 0:
