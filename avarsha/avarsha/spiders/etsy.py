@@ -2,74 +2,39 @@
 # @author: donglongtu
 
 import scrapy.cmdline
+import urllib2
+import re
+import json
 
 from avarsha_spider import AvarshaSpider
 from scrapy.selector import Selector
-import urllib2
+from openpyxl import load_workbook
+
 _spider_name = 'etsy'
 
 class EtsySpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["etsy.com"]
+    brand_list = {}
 
     def __init__(self, *args, **kwargs):
         super(EtsySpider, self).__init__(*args, **kwargs)
 
-    def _find_items_from_list_page(self, sel, base_url, items_xpath, item_urls):
-        item_nodes = sel.xpath(items_xpath).extract()
-        requests = []
-        for path in item_nodes:
-            item_url = path
-            if path.find(base_url) == -1:
-                item_url = base_url + path
-            if item_url.find(' ') != -1:
-                item_url = item_url.replace(' ', '%20')
-            item_urls.append(item_url)
-            request = scrapy.Request(item_url, callback=self.parse_item)
-            requests.append(request)
-        return requests
-
-    def _find_nexts_from_list_page(self, sel, base_url, nexts_xpath, list_urls):
-        nexts = sel.xpath(nexts_xpath).extract()
-        requests = []
-        for path in nexts:
-            list_url = path
-            if path.find(base_url) == -1:
-                list_url = base_url + path
-            if (sel.response.url.find('marketplace') != -1 or
-                sel.response.url.find('price') != -1):
-                tail_url = sel.response.url[sel.response.url.rfind('/'):]
-                list_url = list_url + tail_url
-            list_urls.append(list_url)
-            request = scrapy.Request(list_url, callback=self.parse)
-            requests.append(request)
-        return requests
-
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
 
-        base_url = 'https://www.etsy.com'
-        items_xpath = ('//*[@class="listing item listing-card "]/a/@href | '
-            '//*[@class="card-body overflow-hidden display-block"]/@href | '
-            '//*[@class="collected-listing"]/a/@href')
-
-        return self._find_items_from_list_page(
-            sel, base_url, items_xpath, item_urls)
+        return []
 
     def find_nexts_from_list_page(self, sel, list_urls):
         """find next pages in category url"""
 
-        base_url = ''
-        nexts_xpath = ('//*[@id="pager-next"]/@href | //span[@class="ss-icon ss'
-            '-navigateright icon-smaller icon-t-1"]/../@href')
-
-        return self._find_nexts_from_list_page(
-            sel, base_url, nexts_xpath, list_urls)
+        return []
 
     def _extract_url(self, sel, item):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
+        return
         title_xpath = '//*[@itemprop="name"]/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
@@ -79,12 +44,47 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
-        brand_xpath = '//*[@itemprop="title"]/text()'
+        brand_xpath = '//div[@class="card-meta-row-item text-truncate overflow-hidden card-shop-name"]/text()'
         data = sel.xpath(brand_xpath).extract()
         if len(data) != 0:
-            item['brand_name'] = data[0].strip()
+            page = int(sel.response.url[sel.response.url.find('page=') + len('page='):])
+            limit = 600
+            self.brand_list[page] = [brand.strip() for brand in data if len(brand.strip()) > 0]
+            if page >= limit:
+                result = {}
+                for index in self.brand_list:
+                    for brand in self.brand_list[index]:
+                        if brand in result:
+                            result[brand]['number-all'] += 1
+                            if int(index) <= 10:
+                                result[brand]['number-10'] += 1
+                            if int(index) <= 100:
+                                result[brand]['number-100'] += 1
+                        else:
+                            result[brand] = {}
+                            result[brand]['number-all'] = 1
+                            result[brand]['number-10'] = 0
+                            result[brand]['number-100'] = 0
+                            if int(index) <= 10:
+                                result[brand]['number-10'] = 1
+                            if int(index) <= 100:
+                                result[brand]['number-100'] = 1
+                print result
+                keyword = sel.response.url[sel.response.url.find('?q=') + len('?q='):sel.response.url.find('&page=')].replace('+',' ')
+                excel_name = keyword + '.xlsx'
+                wb = load_workbook(excel_name)
+                ws = wb.active
+                for brand in result:
+                    data = []
+                    data.append(brand)
+                    data.append(result[brand]['number-10'])
+                    data.append(result[brand]['number-100'])
+                    data.append(result[brand]['number-all'])
+                    ws.append(data)
+                    wb.save(excel_name)
 
     def _extract_sku(self, sel, item):
+        return
         sku_xpath = '//*[@data-convo_source="listing_convo"]/@data-referring_id'
         data = sel.xpath(sku_xpath).extract()
         if len(data) != 0:
@@ -94,6 +94,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_description(self, sel, item):
+        return
         desc_xpath = '//*[@id="description-text"]'
         data = sel.xpath(desc_xpath).extract()
         if len(data) != 0:
@@ -106,6 +107,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
+        return
         imgs_xpath = '//*[@id="image-carousel"]/li/@data-full-image-href'
         data = sel.xpath(imgs_xpath).extract()
         if len(data) != 0:
@@ -121,6 +123,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
+        return
         price_xpath = '//*[@property="etsymarketplace:price_value"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
@@ -149,6 +152,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        return
         count_xpath = '//span[@class="review-rating"]//meta[@itemprop="count"]/@content'
         data = sel.xpath(count_xpath).extract()
         review_count = 0
