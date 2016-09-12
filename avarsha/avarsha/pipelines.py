@@ -159,20 +159,12 @@ class AvarshaPipeline(object):
 
         if spider.settings['VERSION'] == 'DEV':
             start_urls = []
-            init_urls = [
-                'https://www.etsy.com/search?q=wedding+dresses',
-                'https://www.etsy.com/search?q=bridesmaid+dresses',
-                'https://www.etsy.com/search?q=prom+dresses',
-                'https://www.etsy.com/search?q=evening+dresses',
-                'https://www.etsy.com/search?q=flower+girl+dresses',
-                'https://www.etsy.com/search?q=formal+dresses',
-                'https://www.etsy.com/search?q=cocktail+dresses',
-                'https://www.etsy.com/search?q=mother+of+the+bride+dresses',
-                'https://www.etsy.com/search?q=quinceanera+dresses',
-                'https://www.etsy.com/search?q=homecoming+dresses']
-            for url in init_urls:
-                for page in range(1,600+1):
-                    start_urls.append(url + '&page=' + str(page))
+            
+            wb = load_workbook('shop.xlsx')
+            ws = wb.active
+            for i in range(2,2560):
+                start_urls.append('https://www.etsy.com/shop/' + ws.cell(row = i,column = 2).value + '?row=' + str(i))
+            wb.save('shop.xlsx')
                 
             feeder.init_test_feeds(start_urls)
         else:

@@ -44,36 +44,7 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
-        brand_xpath = '//div[@class="card-meta-row-item text-truncate overflow-hidden card-shop-name"]/text()'
-        data = sel.xpath(brand_xpath).extract()
-        if len(data) != 0:
-            page = int(sel.response.url[sel.response.url.find('page=') + len('page='):])
-            limit = 600
-            self.brand_list[page] = [brand.strip() for brand in data if len(brand.strip()) > 0]
-            if page >= limit:
-                result = {}
-                for index in self.brand_list:
-                    for brand in self.brand_list[index]:
-                        if brand in result:
-                            result[brand]['number-all'] += 1
-                            if int(index) <= 10:
-                                result[brand]['number-10'] += 1
-                            if int(index) <= 100:
-                                result[brand]['number-100'] += 1
-                        else:
-                            result[brand] = {}
-                            result[brand]['number-all'] = 1
-                            result[brand]['number-10'] = 0
-                            result[brand]['number-100'] = 0
-                            if int(index) <= 10:
-                                result[brand]['number-10'] = 1
-                            if int(index) <= 100:
-                                result[brand]['number-100'] = 1
-                print result
-                keyword = sel.response.url[sel.response.url.find('?q=') + len('?q='):sel.response.url.find('&page=')].replace('+',' ')
-                fd = open(keyword, "a")
-                fd.write(json.dumps(result, ensure_ascii=False))
-                fd.close()
+        return
 
     def _extract_sku(self, sel, item):
         return
@@ -83,7 +54,73 @@ class EtsySpider(AvarshaSpider):
             item['sku'] = data[0].strip()
 
     def _extract_features(self, sel, item):
-        pass
+        item = {}
+        
+        location_xpath = '//span[@data-key="user_location"]/text()'
+        data = sel.xpath(location_xpath).extract()
+        if len(data) != 0:
+            item['location'] = data[0].strip()
+        else:
+            item['location'] = ''
+            
+        sales_xpath = '//span[@class="shop-sales hide-border no-wrap"]/a/text()'
+        data = sel.xpath(sales_xpath).extract()
+        if len(data) != 0:
+            item['sales'] = data[0].strip().replace(' Sales','')
+        else:
+            item['sales'] = ''
+            
+        since_xpath = '//span[@class="etsy-since no-wrap"]/text()'
+        data = sel.xpath(since_xpath).extract()
+        if len(data) != 0:
+            item['since'] = data[0].strip()
+        else:
+            item['since'] = ''
+            
+        rating_xpath = '//span[@class="total-rating-count text-gray-lighter ml-xs-1"]/text()'
+        data = sel.xpath(rating_xpath).extract()
+        if len(data) != 0:
+            item['rating'] = data[0].strip().replace('(','').replace(')','')
+        else:
+            item['rating'] = ''
+            
+        favorers_reg = re.compile(r'"num_favorers":(\d+?),')
+        data = favorers_reg.findall(sel.response.body)
+        if len(data) != 0:
+            item['favorers'] = data[0].strip()
+        else:
+            item['favorers'] = ''
+
+        announcement_xpath = '//p[@class="text-gray-lighter announcement-collapse"]/span[@data-key="message"]/text()'
+        data = sel.xpath(announcement_xpath).extract()
+        if len(data) != 0:
+            item['announcement'] = ''.join(data).replace('\r\n',' ')
+        else:
+            item['announcement'] = ''
+        
+        items_name_xpath = '//div[@class="dropdown is-closed dropdown-bottom-left"]/div/ul/li/a/text()'
+        data_name = sel.xpath(items_name_xpath).extract()
+        items_number_xpath = '//div[@class="dropdown is-closed dropdown-bottom-left"]/div/ul/li/a/span/text()'
+        data_number = sel.xpath(items_number_xpath).extract()
+        if len(data_name) != 0 and len(data_number) != 0:
+            data_name = [name.strip() for index,name in enumerate(data_name) if index%2 == 0]
+            item['items'] = json.dumps(dict(zip(data_name,data_number)), ensure_ascii=False)
+        else:
+            item['items'] = ''
+        #print item
+        
+        
+        wb = load_workbook('shop.xlsx')
+        ws = wb.active
+        brand_row = sel.response.url[sel.response.url.find('?row=') + len('?row='):]
+        ws.cell(row = brand_row, column =3).value = item['location']
+        ws.cell(row = brand_row, column =4).value = item['sales']
+        ws.cell(row = brand_row, column =5).value = item['since']
+        ws.cell(row = brand_row, column =6).value = item['rating']
+        ws.cell(row = brand_row, column =7).value = item['favorers']
+        ws.cell(row = brand_row, column =8).value = item['announcement']
+        ws.cell(row = brand_row, column =9).value = item['items']
+        wb.save('shop.xlsx')
 
     def _extract_description(self, sel, item):
         return
