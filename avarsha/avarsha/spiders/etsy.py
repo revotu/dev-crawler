@@ -71,17 +71,9 @@ class EtsySpider(AvarshaSpider):
                                 result[brand]['number-100'] = 1
                 print result
                 keyword = sel.response.url[sel.response.url.find('?q=') + len('?q='):sel.response.url.find('&page=')].replace('+',' ')
-                excel_name = keyword + '.xlsx'
-                wb = load_workbook(excel_name)
-                ws = wb.active
-                for brand in result:
-                    data = []
-                    data.append(brand)
-                    data.append(result[brand]['number-10'])
-                    data.append(result[brand]['number-100'])
-                    data.append(result[brand]['number-all'])
-                    ws.append(data)
-                    wb.save(excel_name)
+                fd = open(keyword, "a")
+                fd.write(json.dumps(result, ensure_ascii=False))
+                fd.close()
 
     def _extract_sku(self, sel, item):
         return
