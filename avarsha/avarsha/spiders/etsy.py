@@ -52,17 +52,13 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
-        return
+        pass
 
     def _extract_sku(self, sel, item):
-        return
-        sku_xpath = '//*[@data-convo_source="listing_convo"]/@data-referring_id'
-        data = sel.xpath(sku_xpath).extract()
-        if len(data) != 0:
-            item['sku'] = data[0].strip()
+        pass
 
     def _extract_features(self, sel, item):
-        return
+        pass
 
     def _extract_description(self, sel, item):
         desc_xpath = '//div[@id="item-overview"]/ul/li/node()'
@@ -121,102 +117,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        return
-        count_xpath = '//span[@class="review-rating"]//meta[@itemprop="count"]/@content'
-        data = sel.xpath(count_xpath).extract()
-        review_count = 0
-        if len(data) == 0:
-            item['review_count'] = 0
-            return []
-        else:
-            review_count = int(data[0])
-        item['review_count'] = review_count
-        if review_count == 0:
-            return []
-        item['max_review_rating'] = 5
-        rating_xpath = '//span[@class="review-rating"]//meta[@itemprop="rating"]/@content'
-        data = sel.xpath(rating_xpath).extract()
-        review_rating = 5.0
-        if len(data) != 0:
-            review_rating = float(data[0])
-        item['review_rating'] = review_rating
-        review_url0_xpath = '//a[@data-target-id="reviews"]/@href'
-        review_url0 = sel.xpath(review_url0_xpath).extract()
-        if len(review_url0) == -1:
-            return []
-        content = ''
-        pagenum = 1
-        review_url = 'https://www.etsy.com' + review_url0[0] + '?page=1'
-        request = urllib2.Request(review_url)
-        response = urllib2.urlopen(request)
-        content = response.read()
-        ratings = []
-        dates = []
-        names = []
-        titles = []
-        conts = []
-        review_list = []
-        r_l = []
-        while 'receipt-review' in content:
-            sel = Selector(text=content)
-            review_rating_xpath = '//ul[@class="receipt-review"]//input[@name="rating"]/@value'
-            review_date_xpath = '//ul[@class="receipt-review"]/li[@class="reviewer-info"]/span[2]/text()'
-            review_name_xpath = '//ul[@class="receipt-review"]/li[@class="reviewer-info"]/span[1]/a/text()'
-            review_title_xpath = '//ul[@class="receipt-review"]//div[@class="review-container clear"]//h2[@class="transaction-title"]/a/text()'
-            review_content_xpath = '//ul[@class="receipt-review"]//div[@class="review-container clear"]//p[@class="review"]/text()'
-            review_rating = sel.xpath(review_rating_xpath).extract()
-            review_date = sel.xpath(review_date_xpath).extract()
-            review_name = sel.xpath(review_name_xpath).extract()
-            review_title = sel.xpath(review_title_xpath).extract()
-            review_content = sel.xpath(review_content_xpath).extract()
-            review_num = min(len(review_rating), len(review_date), len(review_name), len(review_title), len(review_content))
-            if review_num != 0:
-                for i in range(review_num):
-                    ratings.append(float(review_rating[i]))
-                    review_date[i] = review_date[i].replace('on ', '')
-                    dates.append(review_date[i])
-                    names.append(review_name[i])
-                    idx1 = review_title[i].find('\n')
-                    idx2 = len(review_title[i]) - 1
-                    if idx1 != -1 and idx1 < len('\n'):
-                        idx1 += len('\n')
-                        while review_title[i][idx1] == ' ' and idx1 <= idx2:
-                            idx1 += 1
-                        while review_title[i][idx2] == ' ':
-                            idx2 -= 1
-                        review_title[i] = review_title[i][idx1:idx2].replace('\n', '')
-                        titles.append(review_title[i])
-                    else:
-                        titles.append(review_title[i])
-                    idx1 = review_content[i].find('\n')
-                    idx2 = len(review_content[i]) - 1
-                    if idx1 != -1 and idx1 < len('\n'):
-                        idx1 += len('\n')
-                        while review_content[i][idx1] == ' ' and idx1 <= idx2:
-                            idx1 += 1
-                        while review_content[i][idx2] == ' ':
-                            idx2 -= 1
-                        review_content[i] = review_content[i][idx1:idx2].replace('\n', '')
-                        conts.append(review_content[i])
-                    else:
-                        conts.append(review_content[i])
-            for j in range(review_num):
-                review_list.append({'rating':ratings[j],
-                                  'date':dates[j],
-                                  'name':names[j],
-                                  'title':titles[j],
-                                  'content':conts[j]})
-            pagenum += 1
-            review_url = 'https://www.etsy.com' + review_url0[0] + '?page=' + str(pagenum)
-            request = urllib2.Request(review_url)
-            response = urllib2.urlopen(request)
-            content = response.read()
-            ratings = []
-            dates = []
-            names = []
-            titles = []
-            conts = []
-        item['review_list'] = review_list
+        pass
 
 def main():
     scrapy.cmdline.execute(argv=['scrapy', 'crawl', _spider_name])
