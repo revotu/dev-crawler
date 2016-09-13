@@ -6,6 +6,7 @@ import urllib2
 import re
 import json
 
+from w3lib.html import remove_tags
 from avarsha_spider import AvarshaSpider
 from scrapy.selector import Selector
 from openpyxl import load_workbook
@@ -15,27 +16,34 @@ _spider_name = 'etsy'
 class EtsySpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["etsy.com"]
-    brand_list = {}
 
     def __init__(self, *args, **kwargs):
         super(EtsySpider, self).__init__(*args, **kwargs)
 
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
+        
+        base_url = ''
+        items_xpath = '//div[@class="block-grid-item listing-card position-relative parent-hover-show"]/a/@href'
 
-        return []
+        # don't need to change this line
+        return self._find_items_from_list_page(
+            sel, base_url, items_xpath, item_urls)
 
     def find_nexts_from_list_page(self, sel, list_urls):
         """find next pages in category url"""
 
-        return []
+        base_url = ''
+        nexts_xpath = '//div[@class="pagination btn-group clearfix mt-xs-3"]/a[last()]/@href'
+
+        return self._find_nexts_from_list_page(
+            sel, base_url, nexts_xpath, list_urls)
 
     def _extract_url(self, sel, item):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        return
-        title_xpath = '//*[@itemprop="name"]/text()'
+        title_xpath = '//span[@itemprop="name"]/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
             item['title'] = data[0].strip()
@@ -54,80 +62,15 @@ class EtsySpider(AvarshaSpider):
             item['sku'] = data[0].strip()
 
     def _extract_features(self, sel, item):
-        item = {}
-        
-        location_xpath = '//span[@data-key="user_location"]/text()'
-        data = sel.xpath(location_xpath).extract()
-        if len(data) != 0:
-            item['location'] = data[0].strip()
-        else:
-            item['location'] = ''
-            
-        sales_xpath = '//span[@class="shop-sales hide-border no-wrap"]/a/text()'
-        data = sel.xpath(sales_xpath).extract()
-        if len(data) != 0:
-            item['sales'] = data[0].strip().replace(' Sales','')
-        else:
-            item['sales'] = ''
-            
-        since_xpath = '//span[@class="etsy-since no-wrap"]/text()'
-        data = sel.xpath(since_xpath).extract()
-        if len(data) != 0:
-            item['since'] = data[0].strip()
-        else:
-            item['since'] = ''
-            
-        rating_xpath = '//span[@class="total-rating-count text-gray-lighter ml-xs-1"]/text()'
-        data = sel.xpath(rating_xpath).extract()
-        if len(data) != 0:
-            item['rating'] = data[0].strip().replace('(','').replace(')','')
-        else:
-            item['rating'] = ''
-            
-        favorers_reg = re.compile(r'"num_favorers":(\d+?),')
-        data = favorers_reg.findall(sel.response.body)
-        if len(data) != 0:
-            item['favorers'] = data[0].strip()
-        else:
-            item['favorers'] = ''
-
-        announcement_xpath = '//p[@class="text-gray-lighter announcement-collapse"]/span[@data-key="message"]/text()'
-        data = sel.xpath(announcement_xpath).extract()
-        if len(data) != 0:
-            item['announcement'] = ''.join(data).replace('\r\n',' ')
-        else:
-            item['announcement'] = ''
-        
-        items_name_xpath = '//div[@class="dropdown is-closed dropdown-bottom-left"]/div/ul/li/a/text()'
-        data_name = sel.xpath(items_name_xpath).extract()
-        items_number_xpath = '//div[@class="dropdown is-closed dropdown-bottom-left"]/div/ul/li/a/span/text()'
-        data_number = sel.xpath(items_number_xpath).extract()
-        if len(data_name) != 0 and len(data_number) != 0:
-            data_name = [name.strip() for index,name in enumerate(data_name) if index%2 == 0]
-            item['items'] = json.dumps(dict(zip(data_name,data_number)), ensure_ascii=False)
-        else:
-            item['items'] = ''
-        #print item
-        
-        
-        wb = load_workbook('shop.xlsx')
-        ws = wb.active
-        brand_row = sel.response.url[sel.response.url.find('?row=') + len('?row='):]
-        ws.cell(row = brand_row, column =3).value = item['location']
-        ws.cell(row = brand_row, column =4).value = item['sales']
-        ws.cell(row = brand_row, column =5).value = item['since']
-        ws.cell(row = brand_row, column =6).value = item['rating']
-        ws.cell(row = brand_row, column =7).value = item['favorers']
-        ws.cell(row = brand_row, column =8).value = item['announcement']
-        ws.cell(row = brand_row, column =9).value = item['items']
-        wb.save('shop.xlsx')
+        return
 
     def _extract_description(self, sel, item):
-        return
-        desc_xpath = '//*[@id="description-text"]'
+        desc_xpath = '//div[@id="item-overview"]/ul/li/node()'
         data = sel.xpath(desc_xpath).extract()
         if len(data) != 0:
-            item['description'] = data[0].strip()
+            data = [remove_tags(v.strip()) for v in data]
+            description = ';'.join(data).replace(':;',':').replace('from;','from ')
+            item['description'] = description
 
     def _extract_size_chart(self, sel, item):
         pass
@@ -136,8 +79,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        return
-        imgs_xpath = '//*[@id="image-carousel"]/li/@data-full-image-href'
+        imgs_xpath = '//ul[@id="image-carousel"]/li/@data-full-image-href'
         data = sel.xpath(imgs_xpath).extract()
         if len(data) != 0:
             item['image_urls'] = data
@@ -152,12 +94,10 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
-        return
-        price_xpath = '//*[@property="etsymarketplace:price_value"]/@content'
+        price_xpath = '//meta[@property="etsymarketplace:price_value"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
-            price_number = data[0].strip()
-            item['price'] = self._format_price('USD', price_number)
+            item['price'] = data[0].strip()
 
     def _extract_list_price(self, sel, item):
         pass
