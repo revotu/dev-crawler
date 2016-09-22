@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            #self.store(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -162,8 +162,8 @@ class AvarshaPipeline(object):
             
             wb = load_workbook('shop.xlsx')
             ws = wb.active
-            for i in range(2,2560):
-                start_urls.append('https://www.etsy.com/shop/' + ws.cell(row = i,column = 2).value + '?row=' + str(i))
+            for i in range(2,460):
+                start_urls.append(ws.cell(row = i,column = 1).value + '?row=' + str(i))
             wb.save('shop.xlsx')
                 
             feeder.init_test_feeds(start_urls)
@@ -210,12 +210,13 @@ class AvarshaPipeline(object):
         wb = load_workbook(os.path.join(dir,'..','..','products.xlsx'))
         ws = wb.active
         data = []
-        data.append(item['url'])
-        data.append(item['sku'])        
-        data.append(json.dumps(item['features'], ensure_ascii=False))
+        data.append(item['sku'])
+        data.append(item['price'])        
+        data.append(item['sizes'])
+        data.append(item['colors'])
         ws.append(data)
         print 'write to excel ok'
-        wb.save(os.path.join(dir,'products.xlsx'))
+        wb.save(os.path.join(dir,'..','..','products.xlsx'))
         
     
     def store_to_excel(self , item):
