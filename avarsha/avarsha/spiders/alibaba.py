@@ -241,7 +241,7 @@ class AlibabaSpider(AvarshaSpider):
         color_xpath = '//meta[@property="og:description"]/@content';
         data = sel.xpath(color_xpath).extract();
         if len(data) > 0:
-            index_start = data[0].find('颜色:') + 3
+            index_start = data[0].find('，颜色:') + 4
             index_end = data[0].find('，尺码:')
             color_data = data[0][index_start:index_end]
             item['colors'] = color_data
