@@ -52,10 +52,13 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
-        pass
+        brand_xpath = '//span[@itemprop="title"]/text()'
+        data = sel.xpath(brand_xpath).extract()
+        if len(data) != 0:
+            item['brand_name'] = data[0].strip()
 
     def _extract_sku(self, sel, item):
-        pass
+        item['sku'] = sel.response.url[sel.response.url.find('listing/') + len('listing/'): sel.response.url.rfind('/')]
 
     def _extract_features(self, sel, item):
         pass
@@ -75,10 +78,11 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
+        dir = sel.response.url[sel.response.url.find('ref=') + len('ref='):]
         imgs_xpath = '//ul[@id="image-carousel"]/li/@data-full-image-href'
         data = sel.xpath(imgs_xpath).extract()
         if len(data) != 0:
-            item['image_urls'] = data
+            item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
 
     def _extract_colors(self, sel, item):
         pass
