@@ -255,6 +255,10 @@ class AlibabaSpider(AvarshaSpider):
             size_data = data[0][index_start:index_end]
             if size_data.find('，面料名称') != -1:
                 item['sizes'] = size_data[:size_data.find('，面料名称')]
+            elif size_data.find('，适用年龄') != -1:
+                item['sizes'] = size_data[:size_data.find('，适用年龄')]
+            elif size_data.find('，毛种类') != -1:
+                item['sizes'] = size_data[:size_data.find('，毛种类')]
             else:
                 item['sizes'] = size_data
 
