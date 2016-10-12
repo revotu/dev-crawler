@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store(item)
+            #self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -158,14 +158,14 @@ class AvarshaPipeline(object):
         feeder = spider.feeder
 
         if spider.settings['VERSION'] == 'DEV':
-            start_urls = []
+            start_urls = ['https://www.aliexpress.com/item/Autumn-2016-new-fashion-women-blue-denim-dress-casual-loose-long-sleeved-T-shirt-dresses-straight/32723049716.html']
             
-            dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
-            ws = wb.active
-            for i in range(1,120):
-                start_urls.append(ws.cell(row = i,column = 2).value + '?row=' + str(i))
-            wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
+#             dir = os.path.dirname(os.path.realpath(__file__))
+#             wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
+#             ws = wb.active
+#             for i in range(1,120):
+#                 start_urls.append(ws.cell(row = i,column = 2).value + '?row=' + str(i))
+#             wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
