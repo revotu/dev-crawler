@@ -160,11 +160,12 @@ class AvarshaPipeline(object):
         if spider.settings['VERSION'] == 'DEV':
             start_urls = []
             
-            wb = load_workbook('etsy.xlsx')
+            dir = os.path.dirname(os.path.realpath(__file__))
+            wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
             ws = wb.active
-            for i in range(1,6919):
-                start_urls.append(ws.cell(row = i,column = 1).value)
-            wb.save('etsy.xlsx')
+            for i in range(1,120):
+                start_urls.append(ws.cell(row = i,column = 2).value + '?row=' + str(i))
+            wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -207,18 +208,13 @@ class AvarshaPipeline(object):
 
     def store(self ,item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','etsy-data.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
         ws = wb.active
-        data = []
-        data.append(item['url'])
-        data.append(item['sku'])
-        data.append(item['title'])    
-        data.append(item['brand_name'])    
-        data.append(item['price'])
-        data.append(item['description'])
-        ws.append(data)
-        print 'write to excel ok'
-        wb.save(os.path.join(dir,'..','..','etsy-data.xlsx'))
+        ws.cell(row = item['sku'],column = 3).value = item['price']
+        ws.cell(row = item['sku'],column = 4).value = item['sizes']
+        ws.cell(row = item['sku'],column = 5).value = item['colors']
+        print os.path.join(dir,'..','..','1688-1012.xlsx')
+        wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
         
     
     def store_to_excel(self , item):

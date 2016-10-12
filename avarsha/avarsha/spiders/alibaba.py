@@ -253,7 +253,10 @@ class AlibabaSpider(AvarshaSpider):
             index_start = data[0].find('尺码:') + 3
             index_end = data[0][index_start:].find('。') + index_start
             size_data = data[0][index_start:index_end]
-            item['sizes'] = size_data
+            if size_data.find('，面料名称') != -1:
+                item['sizes'] = size_data[:size_data.find('，面料名称')]
+            else:
+                item['sizes'] = size_data
 
     def _extract_stocks(self, sel, item):
         pass
