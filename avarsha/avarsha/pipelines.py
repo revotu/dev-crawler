@@ -210,9 +210,9 @@ class AvarshaPipeline(object):
         dir = os.path.dirname(os.path.realpath(__file__))
         wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
         ws = wb.active
-        ws.cell(row = item['sku'],column = 3).value = item['price']
-        ws.cell(row = item['sku'],column = 4).value = item['sizes']
-        ws.cell(row = item['sku'],column = 5).value = item['colors']
+        ws.cell(row = int(item['sku']),column = 3).value = item['price']
+        ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
+        ws.cell(row = int(item['sku']),column = 5).value = item['colors']
         print os.path.join(dir,'..','..','1688-1012.xlsx')
         wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
         
