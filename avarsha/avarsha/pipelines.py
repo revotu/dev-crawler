@@ -294,7 +294,7 @@ class AvarshaS3FilesStore(S3FilesStore):
 class AvarshaImagePipeline(ImagesPipeline):
     def __init__(self, *args, **kwargs):
         self.STORE_SCHEMES['s3'] = AvarshaS3FilesStore
-        super(ImagesPipeline, self).__init__(*args, **kwargs)
+        super(AvarshaImagePipeline, self).__init__(*args, **kwargs)
 
     def media_to_download(self, request, info):
         def _onsuccess(result):
