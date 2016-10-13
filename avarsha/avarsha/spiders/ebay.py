@@ -5,6 +5,7 @@ import scrapy.cmdline
 
 import re
 
+from w3lib.html import remove_tags
 from avarsha_spider import AvarshaSpider
 
 
@@ -39,21 +40,16 @@ class EbaySpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        title_xpath = '//*[@id="itemTitle"]/text()'
+        title_xpath = '//meta[@property="og:title"]/@content'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
-            item['title'] = ' '.join(data)
+            item['title'] = data[0]
 
     def _extract_store_name(self, sel, item):
-        item['store_name'] = 'Ebay'
+        pass
 
     def _extract_brand_name(self, sel, item):
-        brand_xpath = '//h2[@itemprop="brand"]/span/text()'
-        data = sel.xpath(brand_xpath).extract()
-        if len(data) != 0:
-            item['brand_name'] = data[0]
-        else:
-            item['brand_name'] = 'Ebay'
+        pass
 
     def _extract_sku(self, sel, item):
         sku_xpath = '//a[contains(@data-itemid, "")]/@data-itemid'
@@ -65,10 +61,18 @@ class EbaySpider(AvarshaSpider):
         pass
 
     def _extract_description(self, sel, item):
-        description_xpath = '//span[@id="vi-cond-addl-info"]/text()'
+        description_xpath = '//div[@class="itemAttr"]/div[@class="section"]/table//tr/node()'
         data = sel.xpath(description_xpath).extract()
-        if len(data) != 0:
-            item['description'] = data[0]
+        if len(data) > 0 :
+            data = [remove_tags(v).strip().replace('\t','').replace('\n','')  for v in data]
+            data = filter(None,data)
+            description = ''
+            for index,desc in enumerate(data):
+                if index % 2 == 0:
+                    description += desc
+                else :
+                    description += desc + ';'
+            item['description'] = description
 
     def _extract_size_chart(self, sel, item):
         pass
@@ -77,56 +81,31 @@ class EbaySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        imgs = []
-        for line in sel.response.body.split(','):
-            idx1 = line.find('maxImageUrl\":\"')
-            if idx1 != -1:
-                idx2 = line.find('?', idx1)
-                img_urlT = line[idx1 + \
-                    len('maxImageUrl\":\"'):idx2].strip()
-                img_url = img_urlT.replace('\u002F', '/')
-                imgs.append(img_url)
-            item['image_urls'] = imgs
+        dir = 'ebay'
+        img_reg = re.compile(r'"maxImageUrl":"(.+?)"')
+        data = img_reg.findall(sel.response.body)
+
+        if len(data) != 0:
+            data = list(set(data))
+            item['image_urls'] = [ img.replace('\u002F','/') + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
 
     def _extract_colors(self, sel, item):
-        colors_xpath = '//select[@name="Color"]//option/text()'
-        data = sel.xpath(colors_xpath).extract()
-        if len(data) != 0:
-            item['colors'] = data[1:]
+        pass
 
     def _extract_sizes(self, sel, item):
-        sizes_xpath = '//select[@name="Size"]//option/text()'
-        data = sel.xpath(sizes_xpath).extract()
-        if len(data) != 0:
-            item['sizes'] = data[1:]
+        pass
 
     def _extract_stocks(self, sel, item):
         pass
 
-    def extract_price_num(self, str_pri):
-        pattern = re.compile(r'\d+\.?\d+')
-        match = re.search(pattern, str_pri)
-        return str(match.group())
-
     def _extract_price(self, sel, item):
-        price_xpath = '//span[@itemprop="price"]/text()'
-        sale_price_xpath = '//span[@id="mm-saleDscPrc"]/text()'
-        data = sel.xpath(price_xpath).extract()
-        if len(data) != 0:
-            price_number = self.extract_price_num(data[0])
-            item['price'] = self._format_price('USD', price_number)
-        else:
-            data = sel.xpath(sale_price_xpath).extract()
-            if len(data) != 0:
-                price_number = self.extract_price_num(data[0])
-                item['price'] = self._format_price('USD', price_number)
+        price_reg = re.compile(r'"binPriceOnly":"(.+?)"')
+        data = price_reg.findall(sel.response.body)
+        if len(data) > 0:
+            item['price'] = data[0].strip()
 
     def _extract_list_price(self, sel, item):
-        list_price_xpath = '//span[@id="mm-saleOrgPrc"]/text()'
-        data = sel.xpath(list_price_xpath).extract()
-        if len(data) != 0:
-            price_number = self.extract_price_num(data[0])
-            item['list_price'] = self._format_price('USD', price_number)
+        pass
 
     def _extract_low_price(self, sel, item):
         pass
