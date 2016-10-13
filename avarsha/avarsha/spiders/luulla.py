@@ -11,14 +11,14 @@ from avarsha_spider import AvarshaSpider
 from scrapy.selector import Selector
 from openpyxl import load_workbook
 
-_spider_name = 'aliexpress'
+_spider_name = 'luulla'
 
-class AliexpressSpider(AvarshaSpider):
+class LuullaSpider(AvarshaSpider):
     name = _spider_name
-    allowed_domains = ["aliexpress.com"]
+    allowed_domains = ["luulla.com"]
 
     def __init__(self, *args, **kwargs):
-        super(AliexpressSpider, self).__init__(*args, **kwargs)
+        super(LuullaSpider, self).__init__(*args, **kwargs)
 
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
@@ -43,10 +43,10 @@ class AliexpressSpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
-        title_xpath = '//h1[@class="product-name"]/text()'
+        title_xpath = '//title/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
-            item['title'] = data[0].strip()
+            item['title'] = data[0].strip().replace(' on Luulla','')
 
     def _extract_store_name(self, sel, item):
         pass
@@ -55,36 +55,38 @@ class AliexpressSpider(AvarshaSpider):
         pass
 
     def _extract_sku(self, sel, item):
-        item['sku'] = sel.response.url[sel.response.url.rfind('/') + len('/'): sel.response.url.find('.htm')]
+        item['sku'] = sel.response.url[sel.response.url.find('product/') + len('product/'): sel.response.url.rfind('/')]
 
     def _extract_features(self, sel, item):
-        features_key_xpath = '//ul[@class="product-property-list util-clearfix"]/li/span[@class="propery-title"]/text()'
-        features_value_xpath = '//ul[@class="product-property-list util-clearfix"]/li/span[@class="propery-des"]/text()'
-        data_key = sel.xpath(features_key_xpath).extract()
-        data_value = sel.xpath(features_value_xpath).extract()
-        if len(data_key) > 0 and len(data_value) > 0:
-            item['features'] = dict(zip(data_key,data_value))
+        pass
 
     def _extract_description(self, sel, item):
-        pass
+        description_xpath = '//div[@id="prd-selection-description-id"]/div[1]/p/text()'
+        data = sel.xpath(description_xpath).extract()
+        if len(data) > 0:
+            item['description'] = data
 
     def _extract_size_chart(self, sel, item):
-        pass
+        #Material Tags
+        material_tags_xpath = '//div[@class="float-left border-top-1-dedede width-full padding-bottom-30"]//a[contains(@href,"/material/")]/text()'
+        data = sel.xpath(material_tags_xpath).extract()
+        if len(data) > 0:
+            item['size_chart'] = data
 
     def _extract_color_chart(self, sel, item):
-        pass
+        #Product Tags
+        product_tags_xpath = '//div[@class="float-left border-top-1-dedede width-full padding-bottom-30"]//a[contains(@href,"/tags/")]/text()'
+        data = sel.xpath(product_tags_xpath).extract()
+        if len(data) > 0:
+            item['color_chart'] = data
 
     def _extract_image_urls(self, sel, item):
-        dir = 'aliexpress'
-        img_url = 'https://www.aliexpress.com/getDescModuleAjax.htm?productId=' + item['sku']
-        content = urllib2.urlopen(img_url).read().strip()
-        content = content[len("window.productDescription='"):-len("';")]
-        sel = Selector(text=content)
-        
-        imgs_xpath = '//p[last()]/img/@src'
-        data = sel.xpath(imgs_xpath).extract()
+        dir = 'luulla'
+        img_reg = re.compile(r"'href','(.+?product-original.+?)'")
+        data = img_reg.findall(sel.response.body)
+
         if len(data) != 0:
-            item['image_urls'] = [ img[:img.find('.jpg') + len('.jpg')] + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
+            item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
 
     def _extract_colors(self, sel, item):
         pass
@@ -96,7 +98,7 @@ class AliexpressSpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
-        price_xpath = '//span[@id="j-sku-price"]/text()'
+        price_xpath = '//meta[@property="og:price:amount"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
             item['price'] = data[0].strip()
@@ -114,7 +116,11 @@ class AliexpressSpider(AvarshaSpider):
         pass
 
     def _extract_review_count(self, sel, item):
-        pass
+        #Total Followers
+        follower_reg = re.compile(r'Total Followers: (\d+)')
+        data = follower_reg.findall(sel.response.body)
+        if len(data) > 0:
+            item['review_count'] = data[0].strip()
 
     def _extract_review_rating(self, sel, item):
         pass

@@ -158,7 +158,7 @@ class AvarshaPipeline(object):
         feeder = spider.feeder
 
         if spider.settings['VERSION'] == 'DEV':
-            start_urls = ['https://www.aliexpress.com/item/Autumn-2016-new-fashion-women-blue-denim-dress-casual-loose-long-sleeved-T-shirt-dresses-straight/32723049716.html']
+            start_urls = ['http://www.luulla.com/product/363825/womens-formal-long-prom-dress-ball-gown-cocktail-party-evening-dress']
             
 #             dir = os.path.dirname(os.path.realpath(__file__))
 #             wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
