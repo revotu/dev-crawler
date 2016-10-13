@@ -190,7 +190,7 @@ class AlibabaSpider(AvarshaSpider):
         item['sku'] = sel.response.url[sel.response.url.find('row=') + len('row='):]
 
     def _extract_features(self, sel, item):
-        return
+        #return
         features_key_xpath = '//div[@id="mod-detail-attributes"]//table/tbody/tr/td[@class="de-feature"]/text()'
         features_value_xpath = '//div[@id="mod-detail-attributes"]//table/tbody/tr/td[@class="de-value"]/text()'
         key = sel.xpath(features_key_xpath).extract()
@@ -198,9 +198,11 @@ class AlibabaSpider(AvarshaSpider):
         
         if len(key) != 0 and len(value) != 0:
             item['features'] = dict(zip(key,value))
-        item['features']['url'] = sel.response.url[:sel.response.url.find('?sitename=')]
-        sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
-        sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
+        item['features']['url'] = sel.response.url[:sel.response.url.find('?')]
+        #sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
+        sitename = '1688-1013'
+        #sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
+        sku = item['sku']
         fd = open(sitename, "a")
         fd.write(sku + ' => ')
         fd.write(json.dumps(item['features'], ensure_ascii=False))
@@ -217,9 +219,11 @@ class AlibabaSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        return
-        sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
-        sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
+        #return
+        #sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
+        sitename = '1688-1013'
+        #sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
+        sku = item['sku']
         image_url_xpath = '//div[@id="desc-lazyload-container"]/@data-tfs-url'
         data = sel.xpath(image_url_xpath).extract()
         if len(data) != 0:
@@ -238,6 +242,7 @@ class AlibabaSpider(AvarshaSpider):
                 item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + sku + '&dir=' + sitename for index ,img in enumerate(list(set(imgs)))]
 
     def _extract_colors(self, sel, item):
+        return
         color_xpath = '//meta[@property="og:description"]/@content';
         data = sel.xpath(color_xpath).extract();
         if len(data) > 0:
@@ -247,6 +252,7 @@ class AlibabaSpider(AvarshaSpider):
             item['colors'] = color_data
 
     def _extract_sizes(self, sel, item):
+        return
         size_xpath = '//meta[@property="og:description"]/@content';
         data = sel.xpath(size_xpath).extract();
         if len(data) > 0:
@@ -266,6 +272,7 @@ class AlibabaSpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
+        return
         price_xpath = '//meta[@property="og:product:price"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) > 0:
