@@ -200,7 +200,7 @@ class AlibabaSpider(AvarshaSpider):
             item['features'] = dict(zip(key,value))
         item['features']['url'] = sel.response.url[:sel.response.url.find('?')]
         #sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
-        sitename = '1688-1013'
+        sitename = '1688-1014'
         #sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
         sku = item['sku']
         fd = open(sitename, "a")
@@ -221,7 +221,7 @@ class AlibabaSpider(AvarshaSpider):
     def _extract_image_urls(self, sel, item):
         #return
         #sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
-        sitename = '1688-1013'
+        sitename = '1688-1014'
         #sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
         sku = item['sku']
         image_url_xpath = '//div[@id="desc-lazyload-container"]/@data-tfs-url'
