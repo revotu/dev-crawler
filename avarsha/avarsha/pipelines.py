@@ -158,14 +158,14 @@ class AvarshaPipeline(object):
         feeder = spider.feeder
 
         if spider.settings['VERSION'] == 'DEV':
-            start_urls = []
+            start_urls = ['https://www.amazon.com/Miusol-Womens-Vintage-Wedding-X-Large/dp/B01A6P0VLQ/ref=sr_1_14']
             
-            dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','1688-1014.xlsx'))
-            ws = wb.active
-            for i in range(1,277):
-                start_urls.append(ws.cell(row = i,column = 1).value + '?row=' + str(i))
-            wb.save(os.path.join(dir,'..','..','1688-1014.xlsx'))
+#             dir = os.path.dirname(os.path.realpath(__file__))
+#             wb = load_workbook(os.path.join(dir,'..','..','1688-1014.xlsx'))
+#             ws = wb.active
+#             for i in range(1,277):
+#                 start_urls.append(ws.cell(row = i,column = 1).value + '?row=' + str(i))
+#             wb.save(os.path.join(dir,'..','..','1688-1014.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:

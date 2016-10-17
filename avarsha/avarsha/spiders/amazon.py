@@ -2,6 +2,7 @@
 # @author: wanghaiyi
 
 import urllib2
+import re
 from openpyxl import load_workbook
 
 import scrapy.cmdline
@@ -63,7 +64,7 @@ class AmazonSpider(AvarshaSpider):
         title_xpath = '//h1[@id="title"]/span/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
-            item['title'] = data[0]
+            item['title'] = data[0].strip()
 
     def _extract_store_name(self, sel, item):
         item['store_name'] = 'Amazon'
@@ -90,9 +91,13 @@ class AmazonSpider(AvarshaSpider):
             item['sku'] = data[0]
 
     def _extract_features(self, sel, item):
-        pass
+        features_xpath = '//div[@id="feature-bullets"]/ul/li/span/text()'
+        data = sel.xpath(features_xpath).extract()
+        if len(data) > 0:
+            item['features'] = ';'.join(data)
 
     def _extract_description(self, sel, item):
+        return
         description_tmp = ''
         description_xpath = '//div[@id="productDescription"]/p'
         description_detail_xpath = '//ul[@class="a-vertical a-spacing-none"]'
@@ -111,23 +116,14 @@ class AmazonSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        item['image_urls'] = []
-        return
-    
-        img_url_list = []
-        idx1 = sel.response.body.strip('\n')
-        idx1 = idx1.strip(' ')
-        while idx1.find('\"hiRes\":') != -1:
-            idx_num_tmp = idx1.find('\"hiRes\":')
-            idx1 = idx1[idx_num_tmp + 9:]
-            idx_num2 = idx1.find('\"thumb')
-            url_tmp = idx1[:idx_num2 - 2]
-            if url_tmp != 'ul':
-                img_url_list.append(url_tmp)
-            idx1 = idx1[idx_num2:]
-        item['image_urls'] = img_url_list
+        dir = 'amazon'
+        img_reg = re.compile(r',"hiRes":"(.+?)","thumb"')
+        data = img_reg.findall(sel.response.body)
+        if len(data) > 0:
+            item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index,img in enumerate(data)]
 
     def _extract_colors(self, sel, item):
+        return
         color_list = []
         for line in sel.response.body.split('\n'):
             idx1 = line.find('\"variationValues\" : ')
@@ -145,6 +141,7 @@ class AmazonSpider(AvarshaSpider):
             item['colors'] = color_list
 
     def _extract_sizes(self, sel, item):
+        return
         size_xpath = '//option[@data-a-css-class="dropdownAvailable"]/@data-a-html-content'
         data = sel.xpath(size_xpath).extract()
         if len(data) != 0:
@@ -165,6 +162,7 @@ class AmazonSpider(AvarshaSpider):
                 item['price'] = self._format_price('USD', data[0].replace('$', ''))
 
     def _extract_list_price(self, sel, item):
+        return
         list_price_xpath = ('//tr/td[@class="a-span12 a-color-secondary '
             'a-size-base a-text-strike"]/text()')
         data = sel.xpath(list_price_xpath).extract()
@@ -172,6 +170,7 @@ class AmazonSpider(AvarshaSpider):
             item['list_price'] = self._format_price('USD', data[0].replace('$', ''))
 
     def _extract_low_price(self, sel, item):
+        return
         price_xpath = ('//span[@id="priceblock_ourprice"]/text() | '
             '//span[@id="priceblock_saleprice"]/text()')
         data = sel.xpath(price_xpath).extract()
@@ -181,6 +180,7 @@ class AmazonSpider(AvarshaSpider):
                 item['low_price'] = self._format_price('USD', data_tmp)
 
     def _extract_high_price(self, sel, item):
+        return
         price_xpath = ('//span[@id="priceblock_ourprice"]/text() | '
             '//span[@id="priceblock_saleprice"]/text()')
         data = sel.xpath(price_xpath).extract()
@@ -201,6 +201,7 @@ class AmazonSpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        return
         sel = Selector(sel.response)
         review_count = 0
         review_rating = 0
