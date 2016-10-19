@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            #self.store(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -158,14 +158,14 @@ class AvarshaPipeline(object):
         feeder = spider.feeder
 
         if spider.settings['VERSION'] == 'DEV':
-            start_urls = ['http://www.tbdress.com/product/Plain-Long-Womens-Fishtail-Skirt-Plus-Size-Available-11435414.html']
+            start_urls = []
             
-#             dir = os.path.dirname(os.path.realpath(__file__))
-#             wb = load_workbook(os.path.join(dir,'..','..','1688-1014.xlsx'))
-#             ws = wb.active
-#             for i in range(1,277):
-#                 start_urls.append(ws.cell(row = i,column = 1).value + '?row=' + str(i))
-#             wb.save(os.path.join(dir,'..','..','1688-1014.xlsx'))
+            dir = os.path.dirname(os.path.realpath(__file__))
+            wb = load_workbook(os.path.join(dir,'..','..','dress-20161019.xlsx'))
+            ws = wb.active
+            for i in range(1,310):
+                start_urls.append(ws.cell(row = i,column = 2).value + '?row=' + str(i))
+            wb.save(os.path.join(dir,'..','..','dress-20161019.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -208,13 +208,12 @@ class AvarshaPipeline(object):
 
     def store(self ,item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','1688-1012.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','dress-20161019.xlsx'))
         ws = wb.active
         ws.cell(row = int(item['sku']),column = 3).value = item['price']
         ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
         ws.cell(row = int(item['sku']),column = 5).value = item['colors']
-        print os.path.join(dir,'..','..','1688-1012.xlsx')
-        wb.save(os.path.join(dir,'..','..','1688-1012.xlsx'))
+        wb.save(os.path.join(dir,'..','..','dress-20161019.xlsx'))
         
     
     def store_to_excel(self , item):

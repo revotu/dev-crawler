@@ -190,7 +190,7 @@ class AlibabaSpider(AvarshaSpider):
         item['sku'] = sel.response.url[sel.response.url.find('row=') + len('row='):]
 
     def _extract_features(self, sel, item):
-        #return
+        return
         features_key_xpath = '//div[@id="mod-detail-attributes"]//table/tbody/tr/td[@class="de-feature"]/text()'
         features_value_xpath = '//div[@id="mod-detail-attributes"]//table/tbody/tr/td[@class="de-value"]/text()'
         key = sel.xpath(features_key_xpath).extract()
@@ -219,7 +219,7 @@ class AlibabaSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        #return
+        return
         #sitename = sel.response.url[sel.response.url.find('?sitename=') + len('?sitename='):sel.response.url.find('&sku=')]
         sitename = '1688-1014'
         #sku = sel.response.url[sel.response.url.find('&sku=') + len('&sku='):]
@@ -242,37 +242,48 @@ class AlibabaSpider(AvarshaSpider):
                 item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + sku + '&dir=' + sitename for index ,img in enumerate(list(set(imgs)))]
 
     def _extract_colors(self, sel, item):
-        return
+        #return
         color_xpath = '//meta[@property="og:description"]/@content';
         data = sel.xpath(color_xpath).extract();
         if len(data) > 0:
             index_start = data[0].find('，颜色:') + 4
             index_end = data[0].find('，尺码:')
             color_data = data[0][index_start:index_end]
+            if color_data.find('。') != -1:
+                color_data = color_data[:color_data.find('。')]
             item['colors'] = color_data
 
     def _extract_sizes(self, sel, item):
-        return
+        #return
         size_xpath = '//meta[@property="og:description"]/@content';
         data = sel.xpath(size_xpath).extract();
         if len(data) > 0:
             index_start = data[0].find('尺码:') + 3
             index_end = data[0][index_start:].find('。') + index_start
             size_data = data[0][index_start:index_end]
-            if size_data.find('，面料名称') != -1:
-                item['sizes'] = size_data[:size_data.find('，面料名称')]
-            elif size_data.find('，适用年龄') != -1:
-                item['sizes'] = size_data[:size_data.find('，适用年龄')]
-            elif size_data.find('，毛种类') != -1:
-                item['sizes'] = size_data[:size_data.find('，毛种类')]
-            else:
-                item['sizes'] = size_data
+            if size_data.find('，面料') != -1:
+                size_data = size_data[:size_data.find('，面料')]
+            if size_data.find('，适用年龄') != -1:
+                size_data = size_data[:size_data.find('，适用年龄')]
+            if size_data.find('，毛种类') != -1:
+                size_data = size_data[:size_data.find('，毛种类')]
+            if size_data.find('，裙型') != -1:
+                size_data = size_data[:size_data.find('，裙型')]
+            if size_data.find('，厚薄') != -1:
+                size_data = size_data[:size_data.find('，厚薄')]
+            if size_data.find('，出品商') != -1:
+                size_data = size_data[:size_data.find('，出品商')]
+            if size_data.find('，注册号') != -1:
+                size_data = size_data[:size_data.find('，注册号')]
+            if size_data.find('，商家编码') != -1:
+                size_data = size_data[:size_data.find('，商家编码')]
+            item['sizes'] = size_data
 
     def _extract_stocks(self, sel, item):
         pass
 
     def _extract_price(self, sel, item):
-        return
+        #return
         price_xpath = '//meta[@property="og:product:price"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) > 0:
