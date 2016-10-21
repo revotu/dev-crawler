@@ -16,6 +16,7 @@ _spider_name = 'etsy'
 class EtsySpider(AvarshaSpider):
     name = _spider_name
     allowed_domains = ["etsy.com"]
+    brand_list = []
 
     def __init__(self, *args, **kwargs):
         super(EtsySpider, self).__init__(*args, **kwargs)
@@ -43,12 +44,14 @@ class EtsySpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
+        return
         title_xpath = '//span[@itemprop="name"]/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
             item['title'] = data[0].strip()
 
     def _extract_store_name(self, sel, item):
+        return
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
@@ -56,6 +59,13 @@ class EtsySpider(AvarshaSpider):
         data = sel.xpath(brand_xpath).extract()
         if len(data) != 0:
             item['brand_name'] = data[0].strip()
+            self.brand_list.append(item['brand_name'])
+            self.brand_list = list(set(self.brand_list))
+            print self.brand_list
+            fd = open('brand', "w")
+            for brand in self.brand_list:
+                fd.write("%s\n" % brand)
+            fd.close()
 
     def _extract_sku(self, sel, item):
         item['sku'] = sel.response.url[sel.response.url.find('listing/') + len('listing/'): sel.response.url.rfind('/')]
@@ -64,6 +74,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_description(self, sel, item):
+        return
         desc_xpath = '//div[@id="item-overview"]/ul/li/node()'
         data = sel.xpath(desc_xpath).extract()
         if len(data) != 0:
@@ -78,6 +89,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
+        return
         dir = sel.response.url[sel.response.url.find('ref=') + len('ref='):]
         imgs_xpath = '//ul[@id="image-carousel"]/li/@data-full-image-href'
         data = sel.xpath(imgs_xpath).extract()
@@ -94,6 +106,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
+        return
         price_xpath = '//meta[@property="etsymarketplace:price_value"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
@@ -121,6 +134,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
+        #review need nickname and content
         pass
 
 def main():
