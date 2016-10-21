@@ -55,8 +55,8 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
-        brand_xpath = '//span[@itemprop="title"]/text()'
-        data = sel.xpath(brand_xpath).extract()
+        brand_reg = re.compile(r'"shop_name":"(.+?)"')
+        data = brand_reg.findall(sel.response.body)
         if len(data) != 0:
             item['brand_name'] = data[0].strip()
             self.brand_list.append(item['brand_name'])
