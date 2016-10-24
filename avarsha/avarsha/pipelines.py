@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            #self.store(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -161,11 +161,11 @@ class AvarshaPipeline(object):
             start_urls = []
             
             dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','etsy-reviews-sn.xlsx'))
+            wb = load_workbook(os.path.join(dir,'..','..','brand.xlsx'))
             ws = wb.active
-            for i in range(1,6415):
-                start_urls.append('https://www.etsy.com/listing/' + str(ws.cell(row = i,column = 1).value))
-            wb.save(os.path.join(dir,'..','..','etsy-reviews-sn.xlsx'))
+            for i in range(1,438):
+                start_urls.append('https://www.etsy.com/shop/%s/reviews' % (str(ws.cell(row = i,column = 1).value)))
+            wb.save(os.path.join(dir,'..','..','brand.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -207,15 +207,16 @@ class AvarshaPipeline(object):
         wb.save(os.path.join(dir,'terms-products.xlsx'))
 
     def store(self ,item):
-        print self.brand_list
-        return
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','brand.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','reviews.xlsx'))
         ws = wb.active
-        ws.cell(row = int(item['sku']),column = 3).value = item['price']
-        ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
-        ws.cell(row = int(item['sku']),column = 5).value = item['colors']
-        wb.save(os.path.join(dir,'..','..','brand.xlsx'))
+        for review in item['review_list']:
+            data = []
+            data.append(review['sku'])
+            data.append(review['name'])
+            data.append(review['content'])
+            ws.append(data)
+            wb.save(os.path.join(dir,'..','..','reviews.xlsx'))
         
     
     def store_to_excel(self , item):
@@ -371,4 +372,4 @@ class AvarshaImagePipeline(ImagesPipeline):
         sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return '1688/%s/%s_(%s).jpg' % (dir,sku,index)
+        return 'etsy/%s/%s_(%s).jpg' % (dir,sku,index)

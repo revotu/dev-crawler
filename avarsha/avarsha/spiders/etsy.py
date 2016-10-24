@@ -5,6 +5,7 @@ import scrapy.cmdline
 import urllib2
 import re
 import json
+import math
 
 from w3lib.html import remove_tags
 from avarsha_spider import AvarshaSpider
@@ -55,6 +56,7 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = 'Etsy'
 
     def _extract_brand_name(self, sel, item):
+        return
         brand_reg = re.compile(r'"shop_name":"(.+?)"')
         data = brand_reg.findall(sel.response.body)
         if len(data) != 0:
@@ -68,6 +70,7 @@ class EtsySpider(AvarshaSpider):
             fd.close()
 
     def _extract_sku(self, sel, item):
+        return
         item['sku'] = sel.response.url[sel.response.url.find('listing/') + len('listing/'): sel.response.url.rfind('/')]
 
     def _extract_features(self, sel, item):
@@ -134,8 +137,55 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        #review need nickname and content
-        pass
+        #review need nickname and content and custom pic
+        review_url_prefix = sel.response.url
+        review_list = []
+        item['image_urls'] = []
+        pagenum = 1
+        count_xpath = '//div[@class="text-center"]/nav[@role="navigation"]/a/@data-page'
+        data = sel.xpath(count_xpath).extract()
+        if len(data) > 0:
+            data = [int(v) for v in data]
+            pagenum = max(data)
+        
+        page = 1
+        
+        review_url = sel.response.url + '?ref=pagination&page=1'
+        
+        
+        while page <= pagenum:
+            content = urllib2.urlopen(review_url).read()
+            sel = Selector(text=content)
+            review_div_xpath = '//div[@data-region="review-list"]/div[@data-region="review"]'
+            review_div = sel.xpath(review_div_xpath).extract()
+
+            if len(review_div) > 0:
+                for review in review_div:
+                    sel = Selector(text=review)
+                    review_name_xpath = '//div[@class="mt-xs-2 mb-xs-2"]/p/a/text()'
+                    review_content_xpath = '//div[@class="text-gray-lighter"]/p/text()'
+                    review_sku_xpath = '//div[@class="flag-body hide-xs hide-sm"]/p/a/@href'
+                    review_img_xpath = '//img/@data-ap-src'
+                    review_name = sel.xpath(review_name_xpath).extract()
+                    review_content = sel.xpath(review_content_xpath).extract()
+                    review_sku = sel.xpath(review_sku_xpath).extract()
+                    review_img = sel.xpath(review_img_xpath).extract()
+                    if len(review_name) > 0 and  len(review_content) > 0 and len(review_sku) > 0:
+                        sku = review_sku[0][review_sku[0].find('/listing/') + len('/listing/'):review_sku[0].rfind('/')] 
+                        review_list.append({'sku': sku,'name':review_name[0],'content':review_content[0]})
+                    if len(review_img) > 0 and len(review_sku) > 0:
+                        for index,img in enumerate(review_img):
+                            item['image_urls'].append(img + '?index=' + str(index + 1) + '&sku=' + str(sku) + '&dir=reviews')
+                        
+            page += 1
+            review_url = review_url_prefix + '?ref=pagination&page=%d' % (page)
+            
+            review_name = []
+            review_content = []
+            review_sku = []
+        
+        item['review_list'] = review_list
+            
 
 def main():
     scrapy.cmdline.execute(argv=['scrapy', 'crawl', _spider_name])
