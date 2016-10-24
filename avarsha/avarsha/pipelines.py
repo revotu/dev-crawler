@@ -216,7 +216,7 @@ class AvarshaPipeline(object):
             data.append(review['name'])
             data.append(review['content'])
             ws.append(data)
-            wb.save(os.path.join(dir,'..','..','reviews.xlsx'))
+        wb.save(os.path.join(dir,'..','..','reviews.xlsx'))
         
     
     def store_to_excel(self , item):
