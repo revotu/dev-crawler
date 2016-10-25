@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
 #         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store(item)
+            self.store_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -161,11 +161,11 @@ class AvarshaPipeline(object):
             start_urls = []
             
             dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','brand.xlsx'))
+            wb = load_workbook(os.path.join(dir,'..','..','lulla.xlsx'))
             ws = wb.active
-            for i in range(1,438):
-                start_urls.append('https://www.etsy.com/shop/%s/reviews' % (str(ws.cell(row = i,column = 1).value)))
-            wb.save(os.path.join(dir,'..','..','brand.xlsx'))
+            for i in range(1,3287):
+                start_urls.append(ws.cell(row = i,column = 1).value)
+            wb.save(os.path.join(dir,'..','..','lulla.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -208,74 +208,54 @@ class AvarshaPipeline(object):
 
     def store(self ,item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','reviews.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','lulla-data.xlsx'))
         ws = wb.active
-        for review in item['review_list']:
-            data = []
-            data.append(review['sku'])
-            data.append(review['name'])
-            data.append(review['content'])
-            ws.append(data)
-        wb.save(os.path.join(dir,'..','..','reviews.xlsx'))
+        ws.cell(row = int(item['sku']),column = 3).value = item['price']
+        ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
+        ws.cell(row = int(item['sku']),column = 5).value = item['colors']
+        wb.save(os.path.join(dir,'..','..','lulla-data.xlsx'))
         
     
     def store_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','products.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','lulla-data.xlsx'))
         ws = wb.active
         data = []
         data.append(item['sku'])
-        data.append(item['product_id'])
-        data.append('dress')
         data.append(item['title'])
-        data.append(item['description'])
-        data.append(item['price'][len('USD '):])
-        data.append(item['list_price'][len('USD '):])
-        data.append('1.5')
-        data.append('2')
-        data.append('Blushing Pink%%Champagne%%Iovry%%White')
-        data.append('')
-        data.append('')
-        data.append('2%%4%%6%%8%%10%%12%%14%%16%%16W%%18W%%20W%%22W%%24W%%26W')
+        data.append(item['price'])
+        data.append(item['review_count'])
+        data.append(' <br> '.join(item['size_chart']))
+        data.append(' <br> '.join(item['color_chart']))
+        data.append(' <br>' .join(item['description']))
         
-        data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
-        data.append(item['features']['HEMLINE / TRAIN'].replace(', ','%%') if 'HEMLINE / TRAIN' in item['features'] else '')
-        data.append(item['features']['NECKLINE'].replace(', ','%%') if 'NECKLINE' in item['features'] else '')
-        data.append(item['features']['SLEEVE LENGTH'].replace(', ','%%') if 'SLEEVE LENGTH' in item['features'] else '')
-        data.append(item['features']['WAIST'].replace(', ','%%') if 'WAIST' in item['features'] else '')
-        data.append(item['features']['SLEEVE'].replace(', ','%%') if 'Sleeve' in item['features'] else '')
-        data.append(item['features']['FABRIC'].replace(', ','%%') if 'FABRIC' in item['features'] else '')
-        data.append(item['features']['EMBELLISHMENT'].replace(', ','%%') if 'EMBELLISHMENT' in item['features'] else '')
-        data.append('Yes')
-        data.append('Yes')
-        data.append(item['features']['BONING'].replace(', ','%%') if 'Boning' in item['features'] else '')
-        data.append('')
-        data.append(item['features']['BODY SHAPE'].replace(', ','%%') if 'BODY SHAPE' in item['features'] else '')
-        data.append(item['features']['BELT FABRIC'].replace(', ','%%') if 'Belt Fabric' in item['features'] else '')
-        data.append(item['features']['BACK STYLE'].replace(', ','%%') if 'Back Style' in item['features'] else '')
-        data.append('')
-        data.append(item['features']['TREND'].replace(', ','%%') if 'Trend' in item['features'] else '')
-        data.append(item['features']['STYLE'].replace(', ','%%')  if 'STYLE' in item['features'] else '')
-        data.append(item['features']['OCCASION'].replace(', ','%%') if 'Occasion' in item['features'] else '')
-        data.append(item['features']['SEASON'].replace(', ','%%') if 'SEASON' in item['features'] else '')
-        data.append(item['features']['WEDDING VENUES'].replace(', ','%%') if 'WEDDING VENUES' in item['features'] else '')
-        data.append('5')
-        data.append('789')
+#         data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
+#         data.append(item['features']['HEMLINE / TRAIN'].replace(', ','%%') if 'HEMLINE / TRAIN' in item['features'] else '')
+#         data.append(item['features']['NECKLINE'].replace(', ','%%') if 'NECKLINE' in item['features'] else '')
+#         data.append(item['features']['SLEEVE LENGTH'].replace(', ','%%') if 'SLEEVE LENGTH' in item['features'] else '')
+#         data.append(item['features']['WAIST'].replace(', ','%%') if 'WAIST' in item['features'] else '')
+#         data.append(item['features']['SLEEVE'].replace(', ','%%') if 'Sleeve' in item['features'] else '')
+#         data.append(item['features']['FABRIC'].replace(', ','%%') if 'FABRIC' in item['features'] else '')
+#         data.append(item['features']['EMBELLISHMENT'].replace(', ','%%') if 'EMBELLISHMENT' in item['features'] else '')
+#         data.append('Yes')
+#         data.append('Yes')
+#         data.append(item['features']['BONING'].replace(', ','%%') if 'Boning' in item['features'] else '')
+#         data.append('')
+#         data.append(item['features']['BODY SHAPE'].replace(', ','%%') if 'BODY SHAPE' in item['features'] else '')
+#         data.append(item['features']['BELT FABRIC'].replace(', ','%%') if 'Belt Fabric' in item['features'] else '')
+#         data.append(item['features']['BACK STYLE'].replace(', ','%%') if 'Back Style' in item['features'] else '')
+#         data.append('')
+#         data.append(item['features']['TREND'].replace(', ','%%') if 'Trend' in item['features'] else '')
+#         data.append(item['features']['STYLE'].replace(', ','%%')  if 'STYLE' in item['features'] else '')
+#         data.append(item['features']['OCCASION'].replace(', ','%%') if 'Occasion' in item['features'] else '')
+#         data.append(item['features']['SEASON'].replace(', ','%%') if 'SEASON' in item['features'] else '')
+#         data.append(item['features']['WEDDING VENUES'].replace(', ','%%') if 'WEDDING VENUES' in item['features'] else '')
+#         data.append('5')
+#         data.append('789')
         
         ws.append(data)
-        wb.save(os.path.join(dir,'products.xlsx'))
-        
-        if len(item['review_list']) != 0:
-            wb = load_workbook(os.path.join(dir,'reviews.xlsx'))
-            ws = wb.active
-            for rev in item['review_list']:
-                reviews = []
-                reviews.append(item['sku'])
-                reviews.append(rev['name'])
-                reviews.append(rev['content'])
-                
-                ws.append(reviews)
-                wb.save(os.path.join(dir,'reviews.xlsx'))
+        print 'write to excel'
+        wb.save(os.path.join(dir,'..','..','lulla-data.xlsx'))
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):
@@ -372,4 +352,4 @@ class AvarshaImagePipeline(ImagesPipeline):
         sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return 'etsy/%s/%s_(%s).jpg' % (dir,sku,index)
+        return 'lulla/%s/%s_(%s).jpg' % (dir,sku,index)
