@@ -85,10 +85,7 @@ class AmazonSpider(AvarshaSpider):
 
 
     def _extract_sku(self, sel, item):
-        sku_xpath = '//div[@id="averageCustomerReviews"]/@data-asin'
-        data = sel.xpath(sku_xpath).extract()
-        if len(data) != 0:
-            item['sku'] = data[0]
+        item['sku'] = sel.response.url[sel.response.url.find('/dp/') + len('/dp/'):sel.response.url.rfind('/')]
 
     def _extract_features(self, sel, item):
         features_xpath = '//div[@id="feature-bullets"]/ul/li/span/text()'

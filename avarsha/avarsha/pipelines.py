@@ -223,9 +223,9 @@ class AvarshaPipeline(object):
         ws = wb.active
         data = []
         data.append(item['sku'])
-        data.append(item['title'])
-        data.append(item['price'])
-        data.append(item['features'])
+        data.append(item['title'] if 'title' in item else '')
+        data.append(item['price'] if 'price' in item else '')
+        data.append(item['features'] if 'features' in item else '')
         #data.append(json.dumps(item['features']))
         
         
