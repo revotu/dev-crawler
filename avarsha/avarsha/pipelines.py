@@ -161,11 +161,11 @@ class AvarshaPipeline(object):
             start_urls = []
             
             dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','aliexpress.xlsx'))
+            wb = load_workbook(os.path.join(dir,'..','..','amazon.xlsx'))
             ws = wb.active
-            for i in range(1,2711):
+            for i in range(1,1778):
                 start_urls.append(ws.cell(row = i,column = 1).value)
-            wb.save(os.path.join(dir,'..','..','aliexpress.xlsx'))
+            wb.save(os.path.join(dir,'..','..','amazon.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -219,14 +219,14 @@ class AvarshaPipeline(object):
     
     def store_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','aliexpress-data.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','amazon-data.xlsx'))
         ws = wb.active
         data = []
         data.append(item['sku'])
         data.append(item['title'])
         data.append(item['price'])
-        data.append(item['size_chart'])
-        data.append(json.dumps(item['features']))
+        data.append(item['features'])
+        #data.append(json.dumps(item['features']))
         
         
 #         data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
@@ -255,7 +255,7 @@ class AvarshaPipeline(object):
         
         ws.append(data)
         print 'write to excel'
-        wb.save(os.path.join(dir,'..','..','aliexpress-data.xlsx'))
+        wb.save(os.path.join(dir,'..','..','amazon-data.xlsx'))
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):
