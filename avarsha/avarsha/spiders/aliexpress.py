@@ -69,22 +69,23 @@ class AliexpressSpider(AvarshaSpider):
         pass
 
     def _extract_size_chart(self, sel, item):
-        pass
+        category_xpath = '//div[@class="container"]/a/text() | //div[@class="container"]/h2/a/text()'
+        data = sel.xpath(category_xpath).extract()
+        if len(data) > 0:
+            item['size_chart'] = ' > '.join(data)
 
     def _extract_color_chart(self, sel, item):
         pass
 
     def _extract_image_urls(self, sel, item):
         dir = 'aliexpress'
-        img_url = 'https://www.aliexpress.com/getDescModuleAjax.htm?productId=' + item['sku']
-        content = urllib2.urlopen(img_url).read().strip()
-        content = content[len("window.productDescription='"):-len("';")]
-        sel = Selector(text=content)
         
-        imgs_xpath = '//p[last()]/img/@src'
+        imgs_xpath = '//ul[@id="j-image-thumb-list"]/li/span/img/@src | //div[@id="magnifier"]//img/@src'
         data = sel.xpath(imgs_xpath).extract()
         if len(data) != 0:
-            item['image_urls'] = [ img[:img.find('.jpg') + len('.jpg')] + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
+            data = [img[:img.find('.jpg') + len('.jpg')] for img in data]
+            data = list(set(data))
+            item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
 
     def _extract_colors(self, sel, item):
         pass
