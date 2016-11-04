@@ -223,12 +223,12 @@ class AvarshaPipeline(object):
         ws = wb.active
         data = []
         data.append(item['sku'])
-        data.append(item['title'])
-        data.append(item['price'])
-        data.append(item['review_count'])
-        data.append(' <br> '.join(item['size_chart']))
-        data.append(' <br> '.join(item['color_chart']))
-        data.append(' <br>' .join(item['description']))
+        data.append(item['title'] if 'title' in item else '')
+        data.append(item['price'] if 'price' in item else '')
+        data.append(item['review_count'] if 'review_count' in item else '')
+        data.append(' <br> '.join(item['size_chart']) if 'size_chart' in item else '')
+        data.append(' <br> '.join(item['color_chart']) if 'color_chart' in item else '')
+        data.append(' <br>' .join(item['description']) if 'description' in item else '')
         
         
 #         data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
