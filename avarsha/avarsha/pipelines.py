@@ -161,11 +161,11 @@ class AvarshaPipeline(object):
             start_urls = []
             
             dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','amazon.xlsx'))
+            wb = load_workbook(os.path.join(dir,'..','..','lulla.xlsx'))
             ws = wb.active
-            for i in range(1,1778):
+            for i in range(1,793):
                 start_urls.append(ws.cell(row = i,column = 1).value)
-            wb.save(os.path.join(dir,'..','..','amazon.xlsx'))
+            wb.save(os.path.join(dir,'..','..','lulla.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -209,24 +209,26 @@ class AvarshaPipeline(object):
 
     def store(self ,item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','lulla-data.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','7.xlsx'))
         ws = wb.active
         ws.cell(row = int(item['sku']),column = 3).value = item['price']
         ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
         ws.cell(row = int(item['sku']),column = 5).value = item['colors']
-        wb.save(os.path.join(dir,'..','..','lulla-data.xlsx'))
+        wb.save(os.path.join(dir,'..','..','7.xlsx'))
         
     
     def store_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','amazon-data.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','lulla-data.xlsx'))
         ws = wb.active
         data = []
         data.append(item['sku'])
-        data.append(item['title'] if 'title' in item else '')
-        data.append(item['price'] if 'price' in item else '')
-        data.append(item['features'] if 'features' in item else '')
-        #data.append(json.dumps(item['features']))
+        data.append(item['title'])
+        data.append(item['price'])
+        data.append(item['review_count'])
+        data.append(' <br> '.join(item['size_chart']))
+        data.append(' <br> '.join(item['color_chart']))
+        data.append(' <br>' .join(item['description']))
         
         
 #         data.append(item['features']['SILHOUETTE'].replace(', ','%%') if 'SILHOUETTE' in item['features'] else '')
@@ -255,7 +257,7 @@ class AvarshaPipeline(object):
         
         ws.append(data)
         print 'write to excel'
-        wb.save(os.path.join(dir,'..','..','amazon-data.xlsx'))
+        wb.save(os.path.join(dir,'..','..','lulla-data.xlsx'))
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):

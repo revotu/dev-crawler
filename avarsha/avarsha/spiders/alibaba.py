@@ -293,6 +293,14 @@ class AlibabaSpider(AvarshaSpider):
                 size_data = size_data[:size_data.find('，皮质')]
             if size_data.find('，主面料成分') != -1:
                 size_data = size_data[:size_data.find('，主面料成分')]
+            if size_data.find('，重量') != -1:
+                size_data = size_data[:size_data.find('，重量')]
+            if size_data.find('，工艺') != -1:
+                size_data = size_data[:size_data.find('，工艺')]
+            if size_data.find('，货源') != -1:
+                size_data = size_data[:size_data.find('，货源')]
+            if size_data.find('，腰型') != -1:
+                size_data = size_data[:size_data.find('，腰型')]         
             item['sizes'] = size_data
 
     def _extract_stocks(self, sel, item):
