@@ -158,21 +158,14 @@ class AvarshaPipeline(object):
         feeder = spider.feeder
 
         if spider.settings['VERSION'] == 'DEV':
-            start_urls = [
-                          'http://www.ericdress.com/list/cheap-wedding-dresses-75/bestselling/',
-                          'http://www.ericdress.com/list/cheap-bridesmaid-dresses-69/bestselling/',
-                          'http://www.ericdress.com/list/cheap-mother-of-the-bride-dresses-73/bestselling/',
-                          'http://www.ericdress.com/list/cheap-flower-girl-dresses-70/bestselling/',
-                          'http://www.ericdress.com/list/cheap-evening-dresses-4353/bestselling/',
-                          'http://www.ericdress.com/list/cheap-prom-dresses-4354/bestselling/',
-                          'http://www.ericdress.com/list/cheap-cocktail-dresses-4352/bestselling/',
-                          'http://www.ericdress.com/list/cheap-homecoming-dresses-4369/bestselling/',
-                          'http://www.ericdress.com/list/cheap-ready-to-wear-dresses-101029/bestselling/',
-                          'http://www.ericdress.com/list/cheap-quinceanera-dresses-4374/bestselling/',
-                          'http://www.ericdress.com/list/cheap-designer-dresses-103890/bestselling/',
-                          'http://www.ericdress.com/list/cheap-sweet-16-dresses-101608/bestselling/',
-                          'http://www.ericdress.com/list/cheap-tanpell-dresses-107622/bestselling/'
-                          ]
+            start_urls = []
+            
+            dir = os.path.dirname(os.path.realpath(__file__))
+            wb = load_workbook(os.path.join(dir,'..','..','amazon.xlsx'))
+            ws = wb.active
+            for i in range(1,1778):
+                start_urls.append(ws.cell(row = i,column = 1).value)
+            wb.save(os.path.join(dir,'..','..','amazon.xlsx'))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -227,22 +220,21 @@ class AvarshaPipeline(object):
     def store_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
         
-        filename  = item['url'][item['url'].find('?dir=') + len('?dir=') : item['url'].find('&index')] + '.xlsx'
-        row = int(item['url'][item['url'].find('&index=') + len('&index='):])
+        filename  = 'amazon-data.xlsx'
         
         wb = load_workbook(os.path.join(dir,'..','..',filename))
         ws = wb.active
-#         data = []
-#         data.append(item['url'])
-#         data.append(item['sku'])
-#         data.append(item['title'] if 'title' in item else '')
-#         data.append(item['price'] if 'price' in item else '')
-#         data.append(item['description'] if 'description' in item else '')
-        ws.cell(row = row,column = 1).value = item['url'];
-        ws.cell(row = row,column = 2).value = item['sku'];
-        ws.cell(row = row,column = 3).value = item['title'] if 'title' in item else '';
-        ws.cell(row = row,column = 4).value = item['price'] if 'price' in item else '';
-        ws.cell(row = row,column = 5).value = item['description'] if 'description' in item else '';
+        data = []
+        data.append(item['url'])
+        data.append(item['sku'])
+        data.append(item['title'] if 'title' in item else '')
+        data.append(item['price'] if 'price' in item else '')
+        data.append(item['features'] if 'features' in item else '')
+#         ws.cell(row = row,column = 1).value = item['url'];
+#         ws.cell(row = row,column = 2).value = item['sku'];
+#         ws.cell(row = row,column = 3).value = item['title'] if 'title' in item else '';
+#         ws.cell(row = row,column = 4).value = item['price'] if 'price' in item else '';
+#         ws.cell(row = row,column = 5).value = item['description'] if 'description' in item else '';
         
         # row and review 2 tips
         
@@ -270,24 +262,24 @@ class AvarshaPipeline(object):
 #         data.append('5')
 #         data.append('789')
         
-#         ws.append(data)
-#         print 'write to excel'
+        ws.append(data)
+        print 'write to excel'
         wb.save(os.path.join(dir,'..','..',filename))
         
         # store review list
-        filename  = item['url'][item['url'].find('?dir=') + len('?dir=') : item['url'].find('&index')] + '-reviews.xlsx'
-        wb = load_workbook(os.path.join(dir,'..','..',filename))
-        ws = wb.active
-        
-        if 'review_list' in item:
-            for review in item['review_list']:
-                data = []
-                data.append(item['sku'])
-                data.append(review['username'])
-                data.append(review['content'])
-                ws.append(data)
-        
-        wb.save(os.path.join(dir,'..','..',filename))
+#         filename  = item['url'][item['url'].find('?dir=') + len('?dir=') : item['url'].find('&index')] + '-reviews.xlsx'
+#         wb = load_workbook(os.path.join(dir,'..','..',filename))
+#         ws = wb.active
+#         
+#         if 'review_list' in item:
+#             for review in item['review_list']:
+#                 data = []
+#                 data.append(item['sku'])
+#                 data.append(review['username'])
+#                 data.append(review['content'])
+#                 ws.append(data)
+#         
+#         wb.save(os.path.join(dir,'..','..',filename))
 
 class AvarshaS3FilesStore(S3FilesStore):
     def __init__(self, *args, **kwargs):
@@ -380,8 +372,8 @@ class AvarshaImagePipeline(ImagesPipeline):
             return self.image_key(url)
         ## end of deprecation warning block
         
-        index = url[url.find('#index=') + len('#index='):url.find('&sku=')]
+        index = url[url.find('?index=') + len('?index='):url.find('&sku=')]
         sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return 'ericdress/%s/%s_(%s).jpg' % (dir,sku,index)
+        return 'amazon/%s/%s_(%s).jpg' % (dir,sku,index)

@@ -91,7 +91,7 @@ class AmazonSpider(AvarshaSpider):
         features_xpath = '//div[@id="feature-bullets"]/ul/li/span/text()'
         data = sel.xpath(features_xpath).extract()
         if len(data) > 0:
-            item['features'] = ';'.join(data)
+            item['features'] = '<br>'.join(data)
 
     def _extract_description(self, sel, item):
         return
