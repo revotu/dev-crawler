@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store_to_excel(item)
+            #self.store_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -160,12 +160,18 @@ class AvarshaPipeline(object):
         if spider.settings['VERSION'] == 'DEV':
             start_urls = []
             
-            dir = os.path.dirname(os.path.realpath(__file__))
-            wb = load_workbook(os.path.join(dir,'..','..','amazon.xlsx'))
-            ws = wb.active
-            for i in range(1,1778):
-                start_urls.append(ws.cell(row = i,column = 1).value)
-            wb.save(os.path.join(dir,'..','..','amazon.xlsx'))
+#             copyright_owners = ['laradesign','morrellmaxie','primaveracouture','jaszcouture','macduggal',
+#                                 'robertbullock','mignon','seancollection','johnathankayne','shailkusa',
+#                                 'essense','buscemi','moncheri','terrycosta','morilee',
+#                                 'justinalexander','lafemme','allurebridals','promgirlcom','blushprom'
+#                                 'alyceparis','davincibridal','faviana','jovani','alexiadesigns'
+#                                 'eternitybridal','jordanfashions','enzoani','clarisse','ronaldjoyce',
+#                                 'alandarpark','sydneyscloset']
+
+            copyright_owners = ['primaveracouture','morrellmaxie','laradesign','jaszcouture']
+                        
+            for owner in copyright_owners:
+                start_urls.append('http://%s.counterfeit.technology/originals.php' % (owner))
                 
             feeder.init_test_feeds(start_urls)
         else:
@@ -372,8 +378,7 @@ class AvarshaImagePipeline(ImagesPipeline):
             return self.image_key(url)
         ## end of deprecation warning block
         
-        index = url[url.find('?index=') + len('?index='):url.find('&sku=')]
-        sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
+        id = url[url.find('?id=') + len('?id='):url.find('&')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return 'amazon/%s/%s_(%s).jpg' % (dir,sku,index)
+        return '%s/%s.jpg' % (dir,id)

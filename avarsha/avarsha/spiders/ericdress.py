@@ -95,7 +95,7 @@ class EricdressSpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
-        dir = sel.response.url[sel.response.url.find('?dir=') + len('?dir=') : sel.response.url.find('&index')]
+        dir = 'ericdress'
         
         imgs_xpath = '//div[@id="thumbs"]/div[@class="list_images"]/ul/li/img/@src'
         data = sel.xpath(imgs_xpath).extract()
@@ -140,7 +140,7 @@ class EricdressSpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        dir = sel.response.url[sel.response.url.find('?dir=') + len('?dir=') : sel.response.url.find('&index')] + '-reviews'
+        dir = 'ericdress-reviews'
         review_url = 'http://www.ericdress.com/ajax/productreviewHandler.js?action=getProductReviewsPageInfo'
         query_args = {'spuId' : item['stocks'] , 'pageIndex' : '1' , 'pageSize' : '9999'}
         encoded_args  = urllib.urlencode(query_args)

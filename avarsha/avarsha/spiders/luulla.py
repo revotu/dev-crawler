@@ -84,6 +84,9 @@ class LuullaSpider(AvarshaSpider):
         dir = 'luulla'
         img_reg = re.compile(r"'href','(.+?product-original.+?)'")
         data = img_reg.findall(sel.response.body)
+        if len(data) == 0:
+            img_reg = re.compile(r'href="(.+?product-original.+?)"')
+            data = img_reg.findall(sel.response.body)
 
         if len(data) != 0:
             item['image_urls'] = [ img + '?index=' + str(index + 1) + '&sku=' + item['sku'] + '&dir=' + dir for index ,img in enumerate(list(set(data)))]
