@@ -160,15 +160,13 @@ class AvarshaPipeline(object):
         if spider.settings['VERSION'] == 'DEV':
             start_urls = []
             
-#             copyright_owners = ['laradesign','morrellmaxie','primaveracouture','jaszcouture','macduggal',
-#                                 'robertbullock','mignon','seancollection','johnathankayne','shailkusa',
-#                                 'essense','buscemi','moncheri','terrycosta','morilee',
-#                                 'justinalexander','lafemme','allurebridals','promgirlcom','blushprom'
-#                                 'alyceparis','davincibridal','faviana','jovani','alexiadesigns'
-#                                 'eternitybridal','jordanfashions','enzoani','clarisse','ronaldjoyce',
-#                                 'alandarpark','sydneyscloset']
-
-            copyright_owners = ['primaveracouture','morrellmaxie','laradesign','jaszcouture']
+            copyright_owners = ['laradesign','morrellmaxie','primaveracouture','jaszcouture','macduggal',
+                                'robertbullock','mignon','seancollection','johnathankayne','shailkusa',
+                                'essense','buscemi','moncheri','terrycosta','morilee',
+                                'justinalexander','lafemme','allurebridals','promgirlcom','blushprom'
+                                'alyceparis','davincibridal','faviana','jovani','alexiadesigns'
+                                'eternitybridal','jordanfashions','enzoani','clarisse','ronaldjoyce',
+                                'alandarpark','sydneyscloset']
                         
             for owner in copyright_owners:
                 start_urls.append('http://%s.counterfeit.technology/originals.php' % (owner))
