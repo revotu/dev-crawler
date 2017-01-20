@@ -4,7 +4,12 @@
 import scrapy.cmdline
 import re
 import urllib2
+import smtplib
 import os
+
+from urllib2 import Request, urlopen, URLError, HTTPError
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from scrapy.selector import Selector
 from avarsha_spider import AvarshaSpider
@@ -30,7 +35,33 @@ class CounterfeitSpider(AvarshaSpider):
         with open(file, 'w') as f:
             for id in ids:
                 f.write(id + '\n')
-
+    
+    def send_email(self,site,add_owner_images_url):
+        Me = 'support@dresspirit.com'
+        To = ['632624460@qq.com', 'qinyingjie@mingdabeta.com','231130161@qq.com']
+        #To = ['632624460@qq.com']
+    
+        # Create the container (outer) email message.
+        msg = MIMEMultipart()
+        msg['Subject'] = 'Counterfeit update image urls for %s' % (site)
+        # Me == the sender's email address
+        # To = the list of all recipients' email addresses
+        msg['From'] = Me
+        msg['To'] = ",".join(To)
+        text = []
+        for url in add_owner_images_url:
+            text.append('%s' % (url))
+        text = "\n".join(text)
+        msg.attach(MIMEText(text, 'plain'))
+        
+        # Send the email via our own SMTP server.
+        s = smtplib.SMTP("smtp.gmail.com", 587)
+        s.starttls()
+        s.login('support@dresspirit.com', 'mingDA1234')
+        s.sendmail(Me, To, msg.as_string())
+        s.quit()
+    
+    
     def find_items_from_list_page(self, sel, item_urls):
         """parse items in category page"""
 
@@ -80,6 +111,7 @@ class CounterfeitSpider(AvarshaSpider):
     def _extract_image_urls(self, sel, item):
         dir = sel.response.url[sel.response.url.find('http://')+len('http://'):sel.response.url.find('.counterfeit.technology')]
         load_owner_ids = self.load_owner_id(dir)
+        add_owner_images_url = []
         
         img_reg = re.compile(r'"id":"(.+?)","original_url":"(.+?)","thumbnail_url"')
         data = img_reg.findall(sel.response.body)
@@ -90,7 +122,11 @@ class CounterfeitSpider(AvarshaSpider):
                 (id , img_url) = v
                 if id not in load_owner_ids:
                     load_owner_ids.append(id)
+                    add_owner_images_url.append('http://%s.counterfeit.technology/originals.php?id=%s' %(dir,id))
                     item['image_urls'].append(img_url + '?id=' + id + '&dir=' + dir)
+        if len(add_owner_images_url) > 0:
+            print add_owner_images_url
+            self.send_email(dir,add_owner_images_url)
         self.update_owner_id(dir, load_owner_ids)
 
     def _extract_colors(self, sel, item):
