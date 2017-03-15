@@ -2,7 +2,7 @@
 # @author: donglongtu
 
 import scrapy.cmdline
-import urllib2
+import urllib
 import re
 import json
 import math
@@ -52,8 +52,7 @@ class EtsySpider(AvarshaSpider):
             item['title'] = data[0].strip()
 
     def _extract_store_name(self, sel, item):
-        return
-        item['store_name'] = 'Etsy'
+        item['store_name'] = sel.response.url[sel.response.url.find('https://www.etsy.com/shop/') + len('https://www.etsy.com/shop/'): sel.response.url.find('/reviews')]
 
     def _extract_brand_name(self, sel, item):
         return
@@ -139,6 +138,7 @@ class EtsySpider(AvarshaSpider):
     def _extract_review_list(self, sel, item):
         #review need nickname and content and custom pic
         review_url_prefix = sel.response.url
+        
         review_list = []
         item['image_urls'] = []
         pagenum = 1
@@ -150,11 +150,10 @@ class EtsySpider(AvarshaSpider):
         
         page = 1
         
-        review_url = sel.response.url + '?ref=pagination&page=1'
-        
+        review_url = review_url_prefix + '?ref=pagination&page=1'
         
         while page <= pagenum:
-            content = urllib2.urlopen(review_url).read()
+            content = urllib.urlopen(review_url).read()
             sel = Selector(text=content)
             review_div_xpath = '//div[@data-region="review-list"]/div[@data-region="review"]'
             review_div = sel.xpath(review_div_xpath).extract()
@@ -163,6 +162,7 @@ class EtsySpider(AvarshaSpider):
                 for review in review_div:
                     sel = Selector(text=review)
                     review_name_xpath = '//div[@class="mt-xs-2 mb-xs-2"]/p/a/text()'
+                    review_date_xpath = '//div[@class="mt-xs-2 mb-xs-2"]/p/text()'
                     review_content_xpath = '//div[@class="text-gray-lighter"]/p/text()'
                     review_sku_xpath = '//div[@class="flag-body hide-xs hide-sm"]/p/a/@href'
                     review_img_xpath = '//img/@data-ap-src'
@@ -170,12 +170,13 @@ class EtsySpider(AvarshaSpider):
                     review_content = sel.xpath(review_content_xpath).extract()
                     review_sku = sel.xpath(review_sku_xpath).extract()
                     review_img = sel.xpath(review_img_xpath).extract()
+                    review_date = sel.xpath(review_date_xpath).extract()
                     if len(review_name) > 0 and  len(review_content) > 0 and len(review_sku) > 0:
                         sku = review_sku[0][review_sku[0].find('/listing/') + len('/listing/'):review_sku[0].rfind('/')] 
-                        review_list.append({'sku': sku,'name':review_name[0],'content':review_content[0]})
+                        review_list.append({'sku': sku,'name':review_name[0],'content':review_content[0],'date':review_date[1].strip()})
                     if len(review_img) > 0 and len(review_sku) > 0:
                         for index,img in enumerate(review_img):
-                            item['image_urls'].append(img + '?index=' + str(index + 1) + '&sku=' + str(sku) + '&dir=reviews')
+                            item['image_urls'].append(img + '?index=' + str(index + 1) + '&sku=' + str(sku) + '&dir=' + item['store_name'])
                         
             page += 1
             review_url = review_url_prefix + '?ref=pagination&page=%d' % (page)
@@ -183,7 +184,7 @@ class EtsySpider(AvarshaSpider):
             review_name = []
             review_content = []
             review_sku = []
-        
+
         item['review_list'] = review_list
             
 

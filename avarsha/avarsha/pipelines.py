@@ -23,7 +23,7 @@ from scrapy.exceptions import DropItem
 from boto.dynamodb2.exceptions import ItemNotFound
 
 from avarsha.dynamo_db import DynamoDB
-from openpyxl import load_workbook
+from openpyxl import load_workbook,Workbook
 
 
 class AvarshaPipeline(object):
@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            #self.store_to_excel(item)
+            self.store_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -160,17 +160,14 @@ class AvarshaPipeline(object):
         if spider.settings['VERSION'] == 'DEV':
             start_urls = []
             
-            copyright_owners = ['laradesign','morrellmaxie','primaveracouture','jaszcouture','macduggal',
-                                'robertbullock','mignon','seancollection','johnathankayne','shailkusa',
-                                'essense','buscemi','moncheri','terrycosta','morilee',
-                                'justinalexander','lafemme','allurebridals','promgirlcom','blushprom',
-                                'alyceparis','davincibridal','faviana','jovani','alexiadesigns',
-                                'eternitybridal','jordanfashions','enzoani','clarisse','ronaldjoyce',
-                                'alandarpark','sydneyscloset',]
-                        
-            for owner in copyright_owners:
-                start_urls.append('http://%s.counterfeit.technology/originals.php' % (owner))
-                
+            dir = os.path.dirname(os.path.realpath(__file__))
+            
+            wb = load_workbook(os.path.join(dir,'..','..','etsy.xlsx'))
+            ws = wb.active
+            
+            for i in range(1,ws.get_highest_row() + 1):
+                start_urls.append(ws.cell(row = i, column = 2).value + '/reviews')
+            
             feeder.init_test_feeds(start_urls)
         else:
             feeder.init_feeds(spider_name=spider.name,
@@ -224,16 +221,20 @@ class AvarshaPipeline(object):
     def store_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
         
-        filename  = 'amazon-data.xlsx'
+        filename  = '%s.xlsx' % (item['store_name'])
         
-        wb = load_workbook(os.path.join(dir,'..','..',filename))
+        wb = Workbook()
+        wb.save(os.path.join(dir,'..','..','reviews',filename))
+        
+        wb = load_workbook(os.path.join(dir,'..','..','reviews',filename))
         ws = wb.active
-        data = []
-        data.append(item['url'])
-        data.append(item['sku'])
-        data.append(item['title'] if 'title' in item else '')
-        data.append(item['price'] if 'price' in item else '')
-        data.append(item['features'] if 'features' in item else '')
+        
+        for v in item['review_list']:
+            data = []
+            data.append(v['sku'] if 'sku' in v else '')
+            data.append(v['name'] if 'name' in v else '')
+            data.append(v['date'] if 'date' in v else '')
+            data.append(v['content'] if 'content' in v else '')
 #         ws.cell(row = row,column = 1).value = item['url'];
 #         ws.cell(row = row,column = 2).value = item['sku'];
 #         ws.cell(row = row,column = 3).value = item['title'] if 'title' in item else '';
@@ -266,9 +267,9 @@ class AvarshaPipeline(object):
 #         data.append('5')
 #         data.append('789')
         
-        ws.append(data)
-        print 'write to excel'
-        wb.save(os.path.join(dir,'..','..',filename))
+            ws.append(data)
+            print 'write to excel'
+        wb.save(os.path.join(dir,'..','..','reviews',filename))
         
         # store review list
 #         filename  = item['url'][item['url'].find('?dir=') + len('?dir=') : item['url'].find('&index')] + '-reviews.xlsx'
@@ -376,7 +377,8 @@ class AvarshaImagePipeline(ImagesPipeline):
             return self.image_key(url)
         ## end of deprecation warning block
         
-        id = url[url.find('?id=') + len('?id='):url.find('&')]
+        index = url[url.find('?index=') + len('?index='):url.find('&')]
+        sku = url[url.find('&sku=') + len('&sku='):url.find('&dir')]
         dir = url[url.find('&dir=') + len('&dir='):]
         
-        return '%s/%s.jpg' % (dir,id)
+        return '%s/%s_%s.jpg' % (dir,sku,index)
