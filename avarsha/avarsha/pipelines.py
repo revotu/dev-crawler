@@ -168,7 +168,7 @@ class AvarshaPipeline(object):
             for i in range(1,69):
                 start_urls.append(ws.cell(row = i, column = 1).value + '/reviews')
 
-            wb.close()
+            wb.save(os.path.join(dir,'..','..','etsy.xlsx'))
             
             feeder.init_test_feeds(start_urls)
         else:
