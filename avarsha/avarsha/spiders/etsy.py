@@ -48,6 +48,7 @@ class EtsySpider(AvarshaSpider):
         item['url'] = sel.response.url
 
     def _extract_title(self, sel, item):
+        return
         title_xpath = '//span[@itemprop="name"]/text()'
         data = sel.xpath(title_xpath).extract()
         if len(data) != 0:
@@ -57,6 +58,7 @@ class EtsySpider(AvarshaSpider):
         item['store_name'] = sel.response.url[sel.response.url.find('https://www.etsy.com/shop/') + len('https://www.etsy.com/shop/'): sel.response.url.find('/reviews')]
 
     def _extract_brand_name(self, sel, item):
+        return
         brand_reg = re.compile(r'"shop_name":"(.+?)"')
         data = brand_reg.findall(sel.response.body)
         if len(data) != 0:
@@ -70,12 +72,14 @@ class EtsySpider(AvarshaSpider):
             # fd.close()
 
     def _extract_sku(self, sel, item):
+        return
         item['sku'] = sel.response.url[sel.response.url.find('listing/') + len('listing/'): sel.response.url.rfind('/')]
 
     def _extract_features(self, sel, item):
         pass
 
     def _extract_description(self, sel, item):
+        return
         desc_xpath = '//div[@id="item-overview"]/ul/li/node()'
         data = sel.xpath(desc_xpath).extract()
         if len(data) != 0:
@@ -90,6 +94,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_image_urls(self, sel, item):
+        return
         dir = item['brand_name']
         imgs_xpath = '//ul[@id="image-carousel"]/li/@data-full-image-href'
         data = sel.xpath(imgs_xpath).extract()
@@ -106,6 +111,7 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_price(self, sel, item):
+        return
         price_xpath = '//meta[@property="etsymarketplace:price_value"]/@content'
         data = sel.xpath(price_xpath).extract()
         if len(data) != 0:
@@ -133,7 +139,6 @@ class EtsySpider(AvarshaSpider):
         pass
 
     def _extract_review_list(self, sel, item):
-        return
         #review need nickname and content and custom pic
         review_url_prefix = sel.response.url
         

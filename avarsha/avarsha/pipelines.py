@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store(item)
+            self.store_to_excel(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -161,12 +161,12 @@ class AvarshaPipeline(object):
             start_urls = []
             
             dir = os.path.dirname(os.path.realpath(__file__))
-            
+
             wb = load_workbook(os.path.join(dir,'..','..','etsy.xlsx'))
             ws = wb.active
-            
+
             for i in range(1,69):
-                start_urls.append(ws.cell(row = i, column = 1).value + '/items')
+                start_urls.append(ws.cell(row = i, column = 1).value + '/reviews')
 
             wb.close()
             
@@ -196,8 +196,7 @@ class AvarshaPipeline(object):
 #         for field in assert_fields:
 #             if item.get(field) is None:
 #                 raise DropItem("Missing field [%s] in %s" % (field, item))
-        if len(item.get('images')) == 0:
-            raise DropItem("Download images error.")
+        pass
     
     def init_to_excel(self , item):
         dir = os.path.dirname(os.path.realpath(__file__))
