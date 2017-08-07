@@ -96,7 +96,7 @@ class AvarshaPipeline(object):
         self.__assert_necessary_attributes(item)
 
         if spider.settings['VERSION'] == 'DEV':
-            self.store_to_excel(item)
+            self.store(item)
             return item
 
         if spider.settings['CHROME_ENABLED'] is True:
@@ -165,8 +165,10 @@ class AvarshaPipeline(object):
             wb = load_workbook(os.path.join(dir,'..','..','etsy.xlsx'))
             ws = wb.active
             
-            for i in range(1,ws.get_highest_row() + 1):
-                start_urls.append(ws.cell(row = i, column = 2).value + '/reviews')
+            for i in range(1,69):
+                start_urls.append(ws.cell(row = i, column = 1).value + '/items')
+
+            wb.close()
             
             feeder.init_test_feeds(start_urls)
         else:
@@ -210,12 +212,18 @@ class AvarshaPipeline(object):
 
     def store(self ,item):
         dir = os.path.dirname(os.path.realpath(__file__))
-        wb = load_workbook(os.path.join(dir,'..','..','7.xlsx'))
+        wb = load_workbook(os.path.join(dir,'..','..','etsy-data.xlsx'))
         ws = wb.active
-        ws.cell(row = int(item['sku']),column = 3).value = item['price']
-        ws.cell(row = int(item['sku']),column = 4).value = item['sizes']
-        ws.cell(row = int(item['sku']),column = 5).value = item['colors']
-        wb.save(os.path.join(dir,'..','..','7.xlsx'))
+        data = []
+        data.append(item['url'])
+        data.append(item['sku'])
+        data.append(item['title'])
+        data.append(item['brand_name'])
+        data.append(item['price'])
+        data.append(item['description'])
+        ws.append(data)
+        print 'write to excel ok'
+        wb.save(os.path.join(dir,'..','..','etsy-data.xlsx'))
         
     
     def store_to_excel(self , item):
@@ -376,9 +384,9 @@ class AvarshaImagePipeline(ImagesPipeline):
             _warn()
             return self.image_key(url)
         ## end of deprecation warning block
-        
-        index = url[url.find('?index=') + len('?index='):url.find('&')]
-        sku = url[url.find('&sku=') + len('&sku='):url.find('&dir')]
+
+        index = url[url.find('?index=') + len('?index='):url.find('&sku=')]
+        sku = url[url.find('&sku=') + len('&sku='):url.find('&dir=')]
         dir = url[url.find('&dir=') + len('&dir='):]
-        
-        return '%s/%s_%s.jpg' % (dir,sku,index)
+
+        return 'etsy/%s/%s_(%s).jpg' % (dir,sku,index)
